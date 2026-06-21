@@ -1,7 +1,13 @@
 import { ClipboardCheck, Factory, Search, ShieldCheck, Truck } from "lucide-react";
+import { canonicalUrl } from "@/lib/seo";
 
 export const metadata = {
   title: "About",
+  description:
+    "Learn how PlantXchange connects buyers and sellers of used industrial process equipment, chemical plant assets, oil and gas equipment, and heavy industry machinery.",
+  alternates: {
+    canonical: canonicalUrl("/about"),
+  },
 };
 
 export default function AboutPage() {

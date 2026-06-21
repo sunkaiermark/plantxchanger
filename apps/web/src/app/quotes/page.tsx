@@ -5,6 +5,10 @@ import type { QuoteStatus } from "@/lib/strapi/types";
 
 export const metadata = {
   title: "My Quotes",
+  robots: {
+    follow: false,
+    index: false,
+  },
 };
 
 const statusStyles: Record<QuoteStatus, string> = {

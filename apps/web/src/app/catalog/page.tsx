@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { EquipmentCard } from "@/components/equipment-card";
+import { canonicalUrl } from "@/lib/seo";
 import { getCatalogEquipment, getCategories } from "@/lib/strapi/equipment";
 
 type CatalogSearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -11,7 +12,12 @@ function getParam(params: Record<string, string | string[] | undefined>, key: st
 }
 
 export const metadata = {
-  title: "Equipment Exchange",
+  title: "Browse Used Industrial Equipment",
+  description:
+    "Search used process equipment and plant assets by category, condition, country, and keyword. Browse reactors, tanks, mixers, pumps, compressors, cranes, and chemical plants.",
+  alternates: {
+    canonical: canonicalUrl("/catalog"),
+  },
 };
 
 export default async function CatalogPage({ searchParams }: { searchParams: CatalogSearchParams }) {

@@ -1,9 +1,15 @@
 import { Database, Mail, MessageCircle, ShieldCheck } from "lucide-react";
 import { SellEquipmentForm } from "@/components/sell-equipment-form";
+import { canonicalUrl } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/strapi/equipment";
 
 export const metadata = {
   title: "Sell Equipment",
+  description:
+    "Submit used process equipment, chemical plant assets, reactors, tanks, mixers, pumps, compressors, and heavy equipment for review by PlantXchange.",
+  alternates: {
+    canonical: canonicalUrl("/sell"),
+  },
 };
 
 export default async function SellPage() {

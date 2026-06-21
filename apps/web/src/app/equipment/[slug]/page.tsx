@@ -1,14 +1,33 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Factory, Info, MapPin, ShieldCheck, Tag } from "lucide-react";
 import { InquiryActions } from "@/components/inquiry-actions";
 import { QuoteRequestModal } from "@/components/quote-request-modal";
+import { buildBreadcrumbJsonLd, buildEquipmentJsonLd, buildEquipmentMetadata, canonicalUrl } from "@/lib/seo";
 import { getEquipmentBySlug, getSiteSettings } from "@/lib/strapi/equipment";
 import type { EquipmentSummary } from "@/lib/strapi/types";
 
 type EquipmentPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateMetadata({ params }: EquipmentPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const equipment = await getEquipmentBySlug(slug);
+
+  if (!equipment) {
+    return {
+      title: "Equipment not found",
+      robots: {
+        follow: false,
+        index: false,
+      },
+    };
+  }
+
+  return buildEquipmentMetadata(equipment);
+}
 
 const availabilityLabels: Record<string, string> = {
   available: "Available",
@@ -55,9 +74,24 @@ export default async function EquipmentDetailPage({ params }: EquipmentPageProps
   }
 
   const images = [equipment.mainImage, ...equipment.gallery].filter(Boolean);
+  const jsonLd = [
+    buildBreadcrumbJsonLd([
+      { name: "Home", url: canonicalUrl("/") },
+      { name: "Equipment Exchange", url: canonicalUrl("/catalog") },
+      { name: equipment.title, url: canonicalUrl(`/equipment/${equipment.slug}`) },
+    ]),
+    buildEquipmentJsonLd(equipment),
+  ];
 
   return (
     <section className="bg-[#f6f6f6]">
+      {jsonLd.map((schema) => (
+        <script
+          key={schema["@type"]}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
         <Link
           href="/catalog"

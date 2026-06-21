@@ -1,8 +1,18 @@
 import Link from "next/link";
 import { Activity, ArrowRight, DollarSign, Factory, Package, Search, ShieldCheck, Zap } from "lucide-react";
 import { EquipmentCard } from "@/components/equipment-card";
+import { canonicalUrl } from "@/lib/seo";
 import { getCatalogEquipment, getCategories, getFeaturedEquipment } from "@/lib/strapi/equipment";
 import type { EquipmentSummary } from "@/lib/strapi/types";
+
+export const metadata = {
+  title: "Used Industrial Process Equipment Marketplace",
+  description:
+    "Browse used industrial equipment, process plants, reactors, tanks, mixers, pumps, compressors, cranes, and chemical plant assets. Request quotes from PlantXchange.",
+  alternates: {
+    canonical: canonicalUrl("/"),
+  },
+};
 
 const categoryFallbacks = [
   { name: "Reactors", slug: "reactors" },
