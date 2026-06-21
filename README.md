@@ -36,6 +36,10 @@ npm run build:web
 npm run build:cms
 ```
 
+## Deployment
+
+Use [docs/deployment.md](docs/deployment.md) for the production launch checklist, required environment variables, DNS setup, and post-launch SEO checks for `https://www.plantxchanger.com`.
+
 ## Content Operations
 
 - Manage equipment and categories in Strapi Admin.
