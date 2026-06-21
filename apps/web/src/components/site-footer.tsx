@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, MessageCircle } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import type { CategorySummary, SiteSettings } from "@/lib/strapi/types";
 
 export function SiteFooter({
@@ -13,7 +14,7 @@ export function SiteFooter({
     <footer className="border-t border-[#d8ded8] bg-[#15211f] text-white">
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
         <div>
-          <h2 className="text-xl font-semibold">{settings.siteName}</h2>
+          <BrandLogo siteName={settings.siteName} variant="inverse" />
           <p className="mt-3 max-w-md text-sm leading-6 text-white/72">{settings.footerSummary}</p>
         </div>
         <div>

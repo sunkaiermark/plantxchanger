@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, MessageCircle } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import type { SiteSettings } from "@/lib/strapi/types";
 
 const navItems = [
@@ -11,12 +12,9 @@ const navItems = [
 export function SiteHeader({ settings }: { settings: SiteSettings }) {
   return (
     <header className="sticky top-0 z-40 border-b border-[#d8ded8] bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#17463a] text-sm font-bold text-white">
-            PX
-          </span>
-          <span className="text-lg font-semibold text-[#18211f]">{settings.siteName}</span>
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
+        <Link href="/" className="min-w-0" aria-label={`${settings.siteName} home`}>
+          <BrandLogo siteName={settings.siteName} />
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium text-[#4b5a55] md:flex">
           {navItems.map((item) => (
