@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_equipment_features",
+  "info": {
+    "displayName": "Feature"
+  },
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

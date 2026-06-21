@@ -18,6 +18,8 @@ apps/web/out/
 apps/cms/build/
 apps/cms/dist/
 apps/cms/.cache/
+apps/cms/.strapi/
+apps/cms/.strapi-updater.json
 apps/cms/.tmp/
 
 # OS/editor noise
