@@ -25,6 +25,6 @@ When `PLANTXCHANGE_SEED=true`, the bootstrap creates sample categories, sample e
 Create two Strapi API tokens for the Next.js app:
 
 - Read token: read access to Category, Equipment, and Site Settings.
-- Write token: create access for Inquiry.
+- Write token: create and update access for Inquiry.
 
 Keep both tokens only in `apps/web/.env.local`; never expose the write token to browser code.

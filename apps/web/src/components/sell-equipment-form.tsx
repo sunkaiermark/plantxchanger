@@ -60,7 +60,10 @@ export function SellEquipmentForm() {
       }),
     });
 
-    const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+    const payload = (await response.json().catch(() => null)) as {
+      inquiry?: { documentId?: string; status?: string };
+      message?: string;
+    } | null;
 
     if (!response.ok) {
       setState("error");
@@ -70,7 +73,11 @@ export function SellEquipmentForm() {
 
     form.reset();
     setState("success");
-    setMessage("Listing intake saved. We will review the asset before publishing.");
+    setMessage(
+      payload?.inquiry?.documentId
+        ? `Listing intake ${payload.inquiry.documentId} saved as ${payload.inquiry.status ?? "pending"}.`
+        : "Listing intake saved as pending. We will review the asset before publishing.",
+    );
   }
 
   const inputClass =

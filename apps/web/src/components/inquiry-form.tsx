@@ -37,7 +37,10 @@ export function InquiryForm({ equipment }: { equipment: EquipmentSummary }) {
       }),
     });
 
-    const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+    const payload = (await response.json().catch(() => null)) as {
+      inquiry?: { documentId?: string; status?: string };
+      message?: string;
+    } | null;
 
     if (!response.ok) {
       setState("error");
@@ -47,7 +50,11 @@ export function InquiryForm({ equipment }: { equipment: EquipmentSummary }) {
 
     form.reset();
     setState("success");
-    setMessage("Inquiry saved. We will review the equipment details and reply.");
+    setMessage(
+      payload?.inquiry?.documentId
+        ? `Inquiry ${payload.inquiry.documentId} saved as ${payload.inquiry.status ?? "pending"}.`
+        : "Inquiry saved as pending. We will review the equipment details and reply.",
+    );
   }
 
   return (

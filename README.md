@@ -48,7 +48,7 @@ npm run build:cms
 Create two Strapi API tokens:
 
 - Read token: read access to Category, Equipment, and Site Settings.
-- Write token: create access for Inquiry.
+- Write token: create and update access for Inquiry.
 
 Put token values in `apps/web/.env.local`.
 

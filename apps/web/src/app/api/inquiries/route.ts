@@ -1,7 +1,6 @@
 import { hasStrapiWriteConfig } from "@/lib/env";
-import { buildInquiryCreatePayload } from "@/lib/inquiries/payload";
 import { validateInquiryInput } from "@/lib/inquiries/validation";
-import { strapiFetch } from "@/lib/strapi/client";
+import { createInquiry } from "@/lib/strapi/inquiries";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -26,22 +25,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    await strapiFetch("/api/inquiries", {
-      mode: "write",
-      init: {
-        method: "POST",
-        body: JSON.stringify(
-          buildInquiryCreatePayload(parsed.data, {
-            userAgent: request.headers.get("user-agent"),
-            ipAddress:
-              request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-              request.headers.get("x-real-ip"),
-          }),
-        ),
-      },
+    const inquiry = await createInquiry(parsed.data, {
+      userAgent: request.headers.get("user-agent"),
+      ipAddress:
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        request.headers.get("x-real-ip"),
     });
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, inquiry });
   } catch {
     return NextResponse.json(
       {
