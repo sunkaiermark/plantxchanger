@@ -1,4 +1,4 @@
-import type { CategorySummary, EquipmentSummary, MediaAsset, SiteSettings } from "./types";
+import type { CategorySummary, EquipmentSummary, InquirySummary, MediaAsset, QuoteStatus, SiteSettings } from "./types";
 
 function unwrapEntity<T extends Record<string, any>>(item: T | null | undefined): Record<string, any> {
   if (!item) {
@@ -99,6 +99,10 @@ export function normalizeEquipment(item: any, strapiUrl: string): EquipmentSumma
     year: entity.year ? Number(entity.year) : undefined,
     make: entity.make,
     model: entity.model,
+    serialNumber: entity.serialNumber,
+    operatingHours: entity.operatingHours,
+    weight: entity.weight,
+    dimensions: entity.dimensions,
     price: entity.price === null || entity.price === undefined ? undefined : Number(entity.price),
     currency: entity.currency ?? "USD",
     summary: entity.summary,
@@ -116,6 +120,36 @@ export function normalizeEquipment(item: any, strapiUrl: string): EquipmentSumma
     isFeatured: Boolean(entity.isFeatured),
     seoTitle: entity.seoTitle,
     seoDescription: entity.seoDescription,
+  };
+}
+
+function normalizeQuoteStatus(status: string | undefined): QuoteStatus {
+  if (status === "responded" || status === "negotiating" || status === "accepted") {
+    return status;
+  }
+
+  return "pending";
+}
+
+export function normalizeInquiry(item: any): InquirySummary {
+  const entity = unwrapEntity(item);
+
+  return {
+    documentId: String(entity.documentId ?? entity.id ?? entity.equipmentReferenceSnapshot ?? "quote"),
+    inquiryType: entity.inquiryType === "seller" ? "seller" : "buyer",
+    status: normalizeQuoteStatus(entity.status),
+    equipmentReferenceSnapshot: entity.equipmentReferenceSnapshot,
+    equipmentTitleSnapshot: entity.equipmentTitleSnapshot,
+    name: String(entity.name ?? "Buyer"),
+    company: entity.company,
+    email: entity.email,
+    phone: entity.phone,
+    whatsapp: entity.whatsapp,
+    country: entity.country,
+    message: String(entity.message ?? ""),
+    sourcePage: entity.sourcePage,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
   };
 }
 

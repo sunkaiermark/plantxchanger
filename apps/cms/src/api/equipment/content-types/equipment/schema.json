@@ -56,6 +56,18 @@
     "model": {
       "type": "string"
     },
+    "serialNumber": {
+      "type": "string"
+    },
+    "operatingHours": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "string"
+    },
     "price": {
       "type": "decimal"
     },

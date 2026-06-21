@@ -20,7 +20,7 @@ test("buildInquiryCreatePayload maps buyer inquiry to Strapi data envelope", () 
     },
   );
 
-  assert.equal(payload.data.status, "new");
+  assert.equal(payload.data.status, "pending");
   assert.equal(payload.data.relatedEquipment, "equipment-doc-id");
   assert.equal(payload.data.equipmentReferenceSnapshot, "PX-R-001");
   assert.equal(payload.data.userAgent, "node-test");

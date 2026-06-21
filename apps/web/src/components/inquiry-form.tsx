@@ -51,37 +51,37 @@ export function InquiryForm({ equipment }: { equipment: EquipmentSummary }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 rounded-lg border border-[#d8ded8] bg-white p-5">
+    <form onSubmit={handleSubmit} className="grid gap-4 border border-[#dedede] bg-white p-5">
       <input className="hidden" tabIndex={-1} autoComplete="off" name="website" />
       <div>
-        <h2 className="text-xl font-semibold text-[#18211f]">Request availability</h2>
-        <p className="mt-1 text-sm text-[#66736d]">
+        <h2 className="text-2xl font-black uppercase text-[#202329]">Request availability</h2>
+        <p className="mt-2 font-mono text-sm text-[#777a7d]">
           Saved to the inquiry database and linked to {equipment.reference}.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <input required name="name" placeholder="Name" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
-        <input name="company" placeholder="Company" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
-        <input name="email" type="email" placeholder="Email" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
-        <input name="whatsapp" placeholder="WhatsApp" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
-        <input name="phone" placeholder="Phone" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
-        <input name="country" placeholder="Country" className="rounded-lg border border-[#cfd8d2] px-3 py-3" />
+        <input required name="name" placeholder="Name" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
+        <input name="company" placeholder="Company" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
+        <input name="email" type="email" placeholder="Email" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
+        <input name="whatsapp" placeholder="WhatsApp" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
+        <input name="phone" placeholder="Phone" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
+        <input name="country" placeholder="Country" className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]" />
       </div>
       <textarea
         required
         name="message"
         rows={5}
         defaultValue={`Please send availability and quote details for ${equipment.reference}.`}
-        className="rounded-lg border border-[#cfd8d2] px-3 py-3"
+        className="border border-[#d7d7d7] px-3 py-3 font-mono outline-none focus:border-[#ff3d00]"
       />
       <button
         disabled={state === "submitting"}
-        className="h-12 rounded-lg bg-[#17463a] px-5 font-semibold text-white transition hover:bg-[#27566b] disabled:cursor-not-allowed disabled:opacity-60"
+        className="h-12 bg-[#ff3d00] px-5 font-mono font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#e53600] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {state === "submitting" ? "Sending..." : "Save inquiry"}
       </button>
       {message ? (
-        <p className={`text-sm ${state === "success" ? "text-[#17463a]" : "text-[#9b2c2c]"}`}>
+        <p className={`font-mono text-sm ${state === "success" ? "text-[#0a7c3b]" : "text-[#9b2c2c]"}`}>
           {message}
         </p>
       ) : null}

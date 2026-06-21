@@ -1,46 +1,37 @@
 import Link from "next/link";
-import { Mail, MessageCircle } from "lucide-react";
+import { Box, Factory, FileText, PlusCircle, Search } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import type { SiteSettings } from "@/lib/strapi/types";
 
 const navItems = [
-  { href: "/catalog", label: "Catalog" },
-  { href: "/sell", label: "Sell equipment" },
-  { href: "/about", label: "About" },
+  { href: "/catalog", label: "Browse Equipment", icon: Search },
+  { href: "/sell", label: "Sell", icon: PlusCircle },
+  { href: "/quotes", label: "My Quotes", icon: FileText },
+  { href: "/about", label: "About", icon: Box },
 ];
 
 export function SiteHeader({ settings }: { settings: SiteSettings }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-[#d8ded8] bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
+    <header className="sticky top-0 z-40 border-b border-[#e3e3e3] bg-white shadow-sm">
+      <div className="mx-auto flex h-[82px] max-w-7xl items-center justify-between gap-5 px-5 sm:px-8 lg:px-10">
         <Link href="/" className="min-w-0" aria-label={`${settings.siteName} home`}>
           <BrandLogo siteName={settings.siteName} />
         </Link>
-        <nav className="hidden items-center gap-7 text-sm font-medium text-[#4b5a55] md:flex">
+        <nav className="hidden items-center gap-7 text-[15px] font-bold text-[#1f2328] md:flex">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-[#17463a]">
+            <Link key={`${item.href}-${item.label}`} href={item.href} className="inline-flex items-center gap-2 hover:text-[#ff3d00]">
+              <item.icon size={18} strokeWidth={2.2} />
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <a
-            href={`mailto:${settings.contactEmail}`}
-            aria-label="Email PlantXchange"
-            title="Email PlantXchange"
-            className="hidden h-10 w-10 items-center justify-center rounded-lg border border-[#d8ded8] text-[#17463a] transition hover:bg-[#e9efec] sm:flex"
-          >
-            <Mail size={18} />
-          </a>
-          <a
-            href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`}
-            aria-label="WhatsApp PlantXchange"
-            title="WhatsApp PlantXchange"
-            className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#17463a] text-white transition hover:bg-[#27566b]"
-          >
-            <MessageCircle size={18} />
-          </a>
-        </div>
+        <Link
+          href="/quotes"
+          className="hidden h-12 items-center justify-center border border-[#dedede] px-5 font-mono text-sm font-bold uppercase tracking-[0.14em] text-[#1f2328] transition hover:border-[#ff3d00] hover:text-[#ff3d00] lg:inline-flex"
+        >
+          <Factory size={16} className="mr-2" />
+          Quote Requests
+        </Link>
       </div>
     </header>
   );

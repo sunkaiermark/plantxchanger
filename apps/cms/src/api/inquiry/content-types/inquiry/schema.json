@@ -17,8 +17,8 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": ["new", "contacted", "qualified", "closed", "spam"],
-      "default": "new",
+      "enum": ["pending", "responded", "negotiating", "accepted"],
+      "default": "pending",
       "required": true
     },
     "relatedEquipment": {

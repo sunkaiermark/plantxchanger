@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Factory, MapPin, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Factory, Info, MapPin, ShieldCheck, Tag } from "lucide-react";
 import { InquiryActions } from "@/components/inquiry-actions";
-import { InquiryForm } from "@/components/inquiry-form";
+import { QuoteRequestModal } from "@/components/quote-request-modal";
 import { getEquipmentBySlug, getSiteSettings } from "@/lib/strapi/equipment";
+import type { EquipmentSummary } from "@/lib/strapi/types";
 
 type EquipmentPageProps = {
   params: Promise<{ slug: string }>;
@@ -22,13 +23,27 @@ const conditionLabels: Record<string, string> = {
   "for-parts": "For parts",
 };
 
-function formatPrice(price: number | undefined, currency: string) {
-  if (!price) return "Price on request";
+function formatPrice(equipment: EquipmentSummary) {
+  if (!equipment.price) return "Price on request";
   return new Intl.NumberFormat("en", {
     style: "currency",
-    currency,
+    currency: equipment.currency,
     maximumFractionDigits: 0,
-  }).format(price);
+  }).format(equipment.price);
+}
+
+function specRows(equipment: EquipmentSummary) {
+  return [
+    { icon: Factory, label: "Make", value: equipment.make },
+    { icon: Info, label: "Model", value: equipment.model },
+    { icon: Calendar, label: "Year", value: equipment.year?.toString() },
+    { icon: MapPin, label: "Location", value: equipment.country ?? equipment.location },
+    { icon: ShieldCheck, label: "Condition", value: conditionLabels[equipment.condition] },
+    { icon: Tag, label: "Serial number", value: equipment.serialNumber },
+    { icon: Info, label: "Operating hours", value: equipment.operatingHours },
+    { icon: Info, label: "Weight", value: equipment.weight },
+    { icon: Info, label: "Dimensions", value: equipment.dimensions },
+  ].filter((item) => item.value);
 }
 
 export default async function EquipmentDetailPage({ params }: EquipmentPageProps) {
@@ -42,116 +57,130 @@ export default async function EquipmentDetailPage({ params }: EquipmentPageProps
   const images = [equipment.mainImage, ...equipment.gallery].filter(Boolean);
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
-      <Link href="/catalog" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-[#17463a]">
-        <ArrowLeft size={16} />
-        Back to catalog
-      </Link>
+    <section className="bg-[#f6f6f6]">
+      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10">
+        <Link
+          href="/catalog"
+          className="mb-8 inline-flex items-center gap-2 font-mono text-sm font-black uppercase tracking-[0.12em] text-[#202329] hover:text-[#ff3d00]"
+        >
+          <ArrowLeft size={16} />
+          Back to equipment exchange
+        </Link>
 
-      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <div>
-          <div className="overflow-hidden rounded-lg border border-[#d8ded8] bg-white">
-            <div className="aspect-[16/10] bg-[#e9efec]">
-              {equipment.mainImage ? (
-                <img
-                  src={equipment.mainImage.url}
-                  alt={equipment.mainImage.alternativeText ?? equipment.title}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-[#66736d]">
-                  Image pending
-                </div>
-              )}
-            </div>
-          </div>
-          {images.length > 1 ? (
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              {images.slice(1, 4).map((image) => (
-                <div key={image!.url} className="aspect-[4/3] overflow-hidden rounded-lg border border-[#d8ded8] bg-white">
+        <div className="grid gap-9 lg:grid-cols-[1.25fr_0.75fr]">
+          <div>
+            <div className="border border-[#d7d7d7] bg-white p-4 shadow-[0_2px_5px_rgba(0,0,0,0.08)]">
+              <div className="aspect-[16/11] bg-[#e9efec]">
+                {equipment.mainImage ? (
                   <img
-                    src={image!.url}
-                    alt={image!.alternativeText ?? equipment.title}
+                    src={equipment.mainImage.url}
+                    alt={equipment.mainImage.alternativeText ?? equipment.title}
                     className="h-full w-full object-cover"
                   />
+                ) : (
+                  <div className="flex h-full items-center justify-center font-mono text-[#777a7d]">
+                    Image pending
+                  </div>
+                )}
+              </div>
+              {images.length > 0 ? (
+                <div className="mt-4 flex gap-3 overflow-x-auto">
+                  {images.slice(0, 5).map((image) => (
+                    <div
+                      key={image!.url}
+                      className="h-28 w-40 shrink-0 border-2 border-[#ff3d00] bg-white p-1"
+                    >
+                      <img
+                        src={image!.url}
+                        alt={image!.alternativeText ?? equipment.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : null}
             </div>
-          ) : null}
-        </div>
 
-        <aside className="space-y-5">
-          <div className="rounded-lg border border-[#d8ded8] bg-white p-6">
-            <div className="flex flex-wrap gap-2 text-xs font-semibold">
-              <span className="rounded bg-[#e9efec] px-2 py-1 text-[#17463a]">{equipment.reference}</span>
-              <span className="rounded bg-[#f4ead7] px-2 py-1 text-[#7c4b10]">
-                {availabilityLabels[equipment.availability]}
-              </span>
-            </div>
-            <h1 className="mt-4 text-3xl font-semibold leading-tight text-[#18211f]">
-              {equipment.title}
-            </h1>
-            <p className="mt-4 text-lg font-semibold text-[#17463a]">
-              {formatPrice(equipment.price, equipment.currency)}
-            </p>
-            <p className="mt-4 leading-7 text-[#66736d]">{equipment.summary}</p>
-            <div className="mt-5 grid gap-3 text-sm text-[#4b5a55]">
-              <span className="inline-flex items-center gap-2">
-                <Factory size={16} />
-                {equipment.category?.name ?? "Process equipment"}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Tag size={16} />
-                {conditionLabels[equipment.condition] ?? equipment.condition}
-              </span>
-              {equipment.location ? (
-                <span className="inline-flex items-center gap-2">
-                  <MapPin size={16} />
-                  {equipment.location}
-                </span>
-              ) : null}
-              {equipment.year ? (
-                <span className="inline-flex items-center gap-2">
-                  <Calendar size={16} />
-                  {equipment.year}
-                </span>
-              ) : null}
-            </div>
-            <div className="mt-6">
-              <InquiryActions equipment={equipment} settings={settings} />
-            </div>
+            <section className="mt-9">
+              <h2 className="text-[clamp(1.9rem,3vw,2.6rem)] font-black uppercase leading-none tracking-normal text-[#202329]">
+                Equipment Description
+              </h2>
+              <div className="mt-5 border-t-4 border-[#d7d7d7] pt-6">
+                <p className="max-w-4xl font-mono text-lg leading-8 text-[#4f545b]">
+                  {equipment.description ?? equipment.summary}
+                </p>
+                {equipment.features.length > 0 ? (
+                  <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                    {equipment.features.map((feature) => (
+                      <div
+                        key={feature.text}
+                        className="border-l-4 border-[#ff3d00] bg-white px-5 py-4 font-mono text-sm font-bold text-[#45484d]"
+                      >
+                        {feature.text}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </section>
           </div>
 
-          <InquiryForm equipment={equipment} />
-        </aside>
-      </div>
-
-      <div className="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-lg border border-[#d8ded8] bg-white p-6">
-          <h2 className="text-xl font-semibold text-[#18211f]">Specifications</h2>
-          <dl className="mt-5 grid gap-3">
-            {equipment.specifications.map((spec) => (
-              <div key={`${spec.label}-${spec.value}`} className="grid grid-cols-[0.8fr_1fr] gap-4 border-b border-[#edf1ee] pb-3 text-sm last:border-b-0">
-                <dt className="font-semibold text-[#4b5a55]">{spec.label}</dt>
-                <dd className="text-[#18211f]">{spec.value}</dd>
+          <aside className="space-y-6">
+            <section className="border border-[#ffc8b8] bg-white p-7 shadow-[0_2px_6px_rgba(0,0,0,0.08)]">
+              <div className="flex flex-wrap gap-2 font-mono text-xs font-black uppercase text-white">
+                <span className="bg-[#2f343b] px-3 py-2">{availabilityLabels[equipment.availability]}</span>
+                <span className="bg-[#ff3d00] px-3 py-2">{equipment.reference}</span>
               </div>
-            ))}
-          </dl>
-        </section>
+              <h1 className="mt-6 text-[clamp(2.2rem,4vw,3.4rem)] font-black uppercase leading-tight tracking-normal text-[#101318]">
+                {equipment.title}
+              </h1>
+              <p className="mt-8 font-mono text-[clamp(2rem,4vw,3rem)] font-black uppercase tracking-[0.05em] text-[#ff3d00]">
+                {formatPrice(equipment)}
+              </p>
+              <div className="my-8 border-t border-[#dedede]" />
+              <QuoteRequestModal equipment={equipment} />
+              <div className="mt-8 flex items-center justify-center gap-2 font-mono text-sm font-black uppercase tracking-[0.16em] text-[#777a7d]">
+                <ShieldCheck size={18} />
+                Secure B2B platform
+              </div>
+            </section>
 
-        <section className="rounded-lg border border-[#d8ded8] bg-white p-6">
-          <h2 className="text-xl font-semibold text-[#18211f]">Equipment notes</h2>
-          <p className="mt-4 leading-7 text-[#66736d]">{equipment.description}</p>
-          {equipment.features.length > 0 ? (
-            <ul className="mt-5 grid gap-2 text-sm text-[#4b5a55]">
-              {equipment.features.map((feature) => (
-                <li key={feature.text} className="border-l-2 border-[#b7791f] pl-3">
-                  {feature.text}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </section>
+            <section className="border border-[#dedede] bg-white">
+              <h2 className="border-b border-[#dedede] px-6 py-5 text-2xl font-black uppercase tracking-[0.08em] text-[#202329]">
+                Technical Specifications
+              </h2>
+              <dl>
+                {specRows(equipment).map((row) => (
+                  <div
+                    key={row.label}
+                    className="grid grid-cols-[1fr_1.25fr] gap-4 border-b border-[#eeeeee] px-6 py-5 last:border-b-0"
+                  >
+                    <dt className="inline-flex items-center gap-3 font-mono text-sm font-black uppercase tracking-[0.12em] text-[#777a7d]">
+                      <row.icon size={19} />
+                      {row.label}
+                    </dt>
+                    <dd className="text-right font-mono text-base font-black uppercase text-[#202329]">
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+
+            <section className="border border-[#dedede] bg-white p-6">
+              <p className="font-mono text-sm font-black uppercase tracking-[0.18em] text-[#777a7d]">
+                Seller Profile
+              </p>
+              <h2 className="mt-5 text-2xl font-black text-[#202329]">
+                {equipment.sellerDisplayName ?? "Verified industrial seller"}
+              </h2>
+              <p className="mt-2 font-mono text-[#777a7d]">Member since 2026</p>
+              <div className="mt-6">
+                <InquiryActions equipment={equipment} settings={settings} />
+              </div>
+            </section>
+          </aside>
+        </div>
       </div>
     </section>
   );

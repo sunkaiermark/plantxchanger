@@ -10,17 +10,17 @@ export function InquiryActions({
   settings: SiteSettings;
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="grid gap-3">
       <a
         href={buildEquipmentEmailHref(equipment, settings.contactEmail)}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#17463a] px-5 font-semibold text-white transition hover:bg-[#27566b]"
+        className="inline-flex h-12 items-center justify-center gap-2 border border-[#ff3d00] bg-[#ff3d00] px-5 font-mono text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#e53600]"
       >
         <Mail size={18} />
         Email inquiry
       </a>
       <a
         href={buildEquipmentWhatsAppHref(equipment, settings.whatsappNumber)}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#17463a] px-5 font-semibold text-[#17463a] transition hover:bg-[#e9efec]"
+        className="inline-flex h-12 items-center justify-center gap-2 border border-[#dedede] bg-white px-5 font-mono text-sm font-black uppercase tracking-[0.08em] text-[#202329] transition hover:border-[#ff3d00] hover:text-[#ff3d00]"
       >
         <MessageCircle size={18} />
         WhatsApp

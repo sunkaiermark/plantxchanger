@@ -6,14 +6,18 @@ type BrandLogoProps = {
 
 function renderWordmark(siteName: string, inverse: boolean) {
   if (siteName.toLowerCase() !== "plantxchange") {
-    return <span className="text-lg font-semibold tracking-normal">{siteName}</span>;
+    return <span className="text-xl font-black uppercase tracking-tight">{siteName}</span>;
   }
 
   return (
-    <span className="text-xl font-bold tracking-normal sm:text-2xl">
-      <span className={inverse ? "text-white" : "text-[#18211f]"}>Plant</span>
-      <span className="text-[#b7791f]">X</span>
-      <span className={inverse ? "text-white" : "text-[#17463a]"}>change</span>
+    <span
+      className={`text-xl font-black uppercase tracking-tight sm:text-2xl ${
+        inverse ? "text-[#ff6a2a]" : "text-[#ff3d00]"
+      }`}
+    >
+      <span>Plant</span>
+      <span className={inverse ? "text-[#ff6a2a]" : "text-[#d83400]"}>X</span>
+      <span>change</span>
     </span>
   );
 }
@@ -26,40 +30,32 @@ export function BrandLogo({
   const inverse = variant === "inverse";
 
   return (
-    <span className="flex min-w-0 items-center gap-3">
+    <span className="flex min-w-0 items-center gap-2.5">
       <span
-        className={`relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-sm ring-1 ${
+        className={`relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md ${
           inverse
-            ? "bg-white text-[#17463a] ring-white/20"
-            : "bg-[#17463a] text-white ring-[#12372e]/10"
+            ? "bg-white/10 text-[#ff6a2a]"
+            : "bg-[#fff3ed] text-[#ff3d00]"
         }`}
       >
-        <span className="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(241,198,109,0.55),transparent_38%)]" />
         <svg
           aria-hidden="true"
           viewBox="0 0 44 44"
-          className="relative h-9 w-9"
+          className="relative h-7 w-7"
           fill="none"
         >
           <path
-            d="M11 29.5V12h8.2c4.3 0 7.2 2.5 7.2 6.1 0 3.8-2.9 6.3-7.2 6.3h-3.1v5.1"
+            d="M8 32V19l7 4v-7l8 4v-8h7v20"
             stroke="currentColor"
-            strokeWidth="3.2"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
           <path
-            d="M25.5 13.5 34 30.5M34 13.5 25.5 30.5"
-            stroke={inverse ? "#b7791f" : "#f1c66d"}
-            strokeWidth="3.2"
+            d="M12 32h24M15 28h2.5M22 28h2.5M29 28h2.5"
+            stroke="currentColor"
+            strokeWidth="3"
             strokeLinecap="round"
-          />
-          <path
-            d="M15.5 24.2c5.6-.4 9.8-4 11.6-9.8"
-            stroke={inverse ? "#17463a" : "#ffffff"}
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            opacity="0.78"
           />
         </svg>
       </span>
@@ -67,11 +63,11 @@ export function BrandLogo({
         {renderWordmark(siteName, inverse)}
         {showTagline ? (
           <span
-            className={`mt-1 hidden text-[11px] font-semibold uppercase tracking-[0.18em] sm:block ${
-              inverse ? "text-white/58" : "text-[#66736d]"
+            className={`mt-1 hidden text-[10px] font-bold uppercase tracking-[0.18em] sm:block ${
+              inverse ? "text-white/54" : "text-[#6b6f75]"
             }`}
           >
-            Used process equipment
+            Heavy industry exchange
           </span>
         ) : null}
       </span>

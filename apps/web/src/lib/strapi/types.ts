@@ -1,6 +1,7 @@
 export type EquipmentCondition = "excellent" | "good" | "fair" | "for-parts";
 export type EquipmentAvailability = "available" | "under-review" | "sold";
 export type EquipmentCurrency = "USD" | "EUR" | "CNY";
+export type QuoteStatus = "pending" | "responded" | "negotiating" | "accepted";
 
 export interface CategorySummary {
   documentId: string;
@@ -41,6 +42,10 @@ export interface EquipmentSummary {
   year?: number;
   make?: string;
   model?: string;
+  serialNumber?: string;
+  operatingHours?: string;
+  weight?: string;
+  dimensions?: string;
   price?: number;
   currency: EquipmentCurrency;
   summary?: string;
@@ -53,6 +58,24 @@ export interface EquipmentSummary {
   isFeatured: boolean;
   seoTitle?: string;
   seoDescription?: string;
+}
+
+export interface InquirySummary {
+  documentId: string;
+  inquiryType: "buyer" | "seller";
+  status: QuoteStatus;
+  equipmentReferenceSnapshot?: string;
+  equipmentTitleSnapshot?: string;
+  name: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  country?: string;
+  message: string;
+  sourcePage?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SiteSettings {
