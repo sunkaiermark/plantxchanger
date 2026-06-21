@@ -2,7 +2,9 @@
 
 ## Status
 
-Approved for specification on 2026-06-21.
+Superseded on 2026-06-21 by `docs/superpowers/specs/2026-06-21-plantxchange-next-strapi-design.md`.
+
+This earlier design used a static React/Vite catalog with local data. The approved direction is now Next.js + Strapi CMS with inquiry records stored in Strapi.
 
 ## Goal
 
