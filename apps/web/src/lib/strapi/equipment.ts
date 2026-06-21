@@ -42,7 +42,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
 
   try {
-    const response = await strapiFetch<{ data: any }>("/api/site-setting", {
+    const response = await strapiFetch<{ data: unknown }>("/api/site-setting", {
       revalidate: 120,
     });
     return normalizeSiteSettings(response.data);
@@ -57,7 +57,7 @@ export async function getCategories(): Promise<CategorySummary[]> {
   }
 
   try {
-    const response = await strapiFetch<{ data: any[] }>("/api/categories", {
+    const response = await strapiFetch<{ data: unknown[] }>("/api/categories", {
       query: {
         sort: ["sortOrder:asc", "name:asc"],
         pagination: { pageSize: 50 },
@@ -76,7 +76,7 @@ export async function getFeaturedEquipment(): Promise<EquipmentSummary[]> {
   }
 
   try {
-    const response = await strapiFetch<{ data: any[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
       query: {
         filters: { isFeatured: { $eq: true } },
         populate: EQUIPMENT_POPULATE,
@@ -97,7 +97,7 @@ export async function getEquipmentBySlug(slug: string): Promise<EquipmentSummary
   }
 
   try {
-    const response = await strapiFetch<{ data: any[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
       query: {
         filters: { slug: { $eq: slug } },
         populate: EQUIPMENT_POPULATE,
@@ -137,7 +137,7 @@ export async function getCatalogEquipment(searchParams: {
   }
 
   try {
-    const response = await strapiFetch<{ data: any[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
       query: {
         filters,
         populate: EQUIPMENT_POPULATE,

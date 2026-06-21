@@ -18,7 +18,7 @@ export async function getQuoteRequests(): Promise<InquirySummary[]> {
   }
 
   try {
-    const response = await strapiFetch<{ data: any[] }>("/api/inquiries", {
+    const response = await strapiFetch<{ data: unknown[] }>("/api/inquiries", {
       query: {
         filters: { inquiryType: { $eq: "buyer" } },
         sort: ["createdAt:desc"],
@@ -37,7 +37,7 @@ export async function createInquiry(
   input: InquiryInput,
   meta: { userAgent?: string | null; ipAddress?: string | null },
 ): Promise<InquirySummary> {
-  const response = await strapiFetch<{ data: any }>("/api/inquiries", {
+  const response = await strapiFetch<{ data: unknown }>("/api/inquiries", {
     mode: "write",
     init: {
       method: "POST",
@@ -56,7 +56,7 @@ export async function updateInquiryStatus(
     throw new Error(`Unsupported quote status: ${status}`);
   }
 
-  const response = await strapiFetch<{ data: any }>(
+  const response = await strapiFetch<{ data: unknown }>(
     `/api/inquiries/${encodeURIComponent(documentId)}`,
     {
       mode: "write",
