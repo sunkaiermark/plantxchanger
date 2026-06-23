@@ -314,7 +314,7 @@ export default {
       await strapi.documents("api::site-setting.site-setting").create({
         data: {
           siteName: "PlantXchange",
-          contactEmail: "sales@plantxchange.com",
+          contactEmail: "sales@plantxchanger.com",
           whatsappNumber: "+8613800000000",
           whatsappDisplayLabel: "WhatsApp",
           defaultSeoTitle: "PlantXchange | Used Industrial Process Equipment",

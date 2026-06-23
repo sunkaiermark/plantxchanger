@@ -23,7 +23,7 @@ export function hasStrapiWriteConfig(): boolean {
 }
 
 export function getFallbackContactEmail(): string {
-  return process.env.NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL ?? "sales@plantxchange.com";
+  return process.env.NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL ?? "sales@plantxchanger.com";
 }
 
 export function getFallbackWhatsAppNumber(): string {
