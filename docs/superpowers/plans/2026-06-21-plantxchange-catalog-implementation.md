@@ -1,5 +1,7 @@
 # PlantXchange Catalog Implementation Plan
 
+> **Status:** Superseded on 2026-06-21 by `docs/superpowers/specs/2026-06-21-plantxchange-next-strapi-design.md`. Do not execute this Vite/static-data plan. A new implementation plan is required for the Next.js + Strapi CMS architecture.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a standalone static PlantXchange catalog and lead-generation website from the downloaded Replit project assets, without backend, database, generated API client, or Replit runtime dependencies.

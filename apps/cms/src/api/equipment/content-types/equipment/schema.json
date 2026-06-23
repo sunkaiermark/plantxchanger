@@ -1,0 +1,119 @@
+{
+  "kind": "collectionType",
+  "collectionName": "equipment",
+  "info": {
+    "singularName": "equipment",
+    "pluralName": "equipment-items",
+    "displayName": "Equipment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "reference": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "equipment"
+    },
+    "condition": {
+      "type": "enumeration",
+      "enum": ["excellent", "good", "fair", "for-parts"],
+      "default": "good",
+      "required": true
+    },
+    "availability": {
+      "type": "enumeration",
+      "enum": ["available", "under-review", "sold"],
+      "default": "available",
+      "required": true
+    },
+    "country": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "year": {
+      "type": "integer"
+    },
+    "make": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "operatingHours": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "currency": {
+      "type": "enumeration",
+      "enum": ["USD", "EUR", "CNY"],
+      "default": "USD"
+    },
+    "summary": {
+      "type": "text"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "specifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "equipment.specification"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "equipment.feature"
+    },
+    "mainImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "sellerDisplayName": {
+      "type": "string"
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
+    },
+    "seoTitle": {
+      "type": "string"
+    },
+    "seoDescription": {
+      "type": "text"
+    }
+  }
+}
