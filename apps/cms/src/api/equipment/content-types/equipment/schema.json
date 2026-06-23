@@ -3,7 +3,7 @@
   "collectionName": "equipment",
   "info": {
     "singularName": "equipment",
-    "pluralName": "equipment",
+    "pluralName": "equipment-items",
     "displayName": "Equipment"
   },
   "options": {

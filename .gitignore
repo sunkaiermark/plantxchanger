@@ -22,6 +22,7 @@ apps/cms/.cache/
 apps/cms/.strapi/
 apps/cms/.strapi-updater.json
 apps/cms/.tmp/
+apps/cms/types/
 
 # OS/editor noise
 .DS_Store

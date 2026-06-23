@@ -16,6 +16,9 @@
     "verify:web": "npm --workspace apps/web run test && npm --workspace apps/web run typecheck && npm --workspace apps/web run build"
   },
   "devDependencies": {
+    "@reduxjs/toolkit": "^1.9.7",
+    "@strapi/strapi": "5.48.1",
+    "react-redux": "^8.1.3",
     "typescript": "~5.9.3"
   }
 }

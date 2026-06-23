@@ -1,18 +1,172 @@
-# PlantXchange Deployment Checklist
+# PlantXchange Production Launch Plan
 
-This checklist is for launching PlantXchange at `https://www.plantxchanger.com`.
+This plan is for launching PlantXchange at `https://www.plantxchanger.com` with a separate public web app, private Strapi CMS, and managed PostgreSQL database.
 
-## 1. Publish The Code
+## Recommended Production Topology
 
-The current production-ready branch is:
+Use three production services:
 
-```powershell
-codex/plantxchange-catalog
+| Layer | Recommended service | Production URL | Purpose |
+| --- | --- | --- | --- |
+| Frontend | Vercel or Cloudflare Pages | `https://www.plantxchanger.com` | Public catalog, SEO pages, inquiry forms |
+| Backend CMS | Render, Railway, DigitalOcean App Platform, or VPS | `https://cms.plantxchanger.com` | Strapi admin, equipment content, inquiry records |
+| Database | Managed PostgreSQL | Private database URL | Equipment, categories, site settings, inquiries |
+
+Do not deploy Strapi under the public website path. Keep it on a separate subdomain such as `cms.plantxchanger.com`.
+
+For v1 media uploads, choose one:
+
+- Managed persistent disk on the CMS host, simplest for launch.
+- Cloudinary or S3-compatible storage, better for long-term scale.
+
+If the CMS host has an ephemeral filesystem and no persistent disk, Strapi uploaded images can disappear after redeploys.
+
+## Deployment Order
+
+Deploy in this order:
+
+1. Create the PostgreSQL database.
+2. Deploy Strapi CMS and connect it to PostgreSQL.
+3. Create the Strapi admin user.
+4. Configure Strapi public permissions and API tokens.
+5. Deploy the Next.js frontend and connect it to Strapi.
+6. Point DNS for `www.plantxchanger.com` and `cms.plantxchanger.com`.
+7. Run the production smoke test.
+
+## 1. Database
+
+Create a managed PostgreSQL database.
+
+Required output from the database provider:
+
+```text
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 ```
 
-Before connecting a deployment platform, push this branch to GitHub or merge it into the production branch.
+Production database rules:
 
-Required verification before deployment:
+- Use PostgreSQL, not SQLite.
+- Enable automatic daily backups.
+- Keep the database private if the hosting provider supports private networking.
+- Store the database URL only in the CMS service environment variables.
+- Do not put `DATABASE_URL` in the frontend service.
+
+## 2. Backend CMS
+
+Deploy `apps/cms` as the backend service.
+
+Recommended build command:
+
+```bash
+npm install
+npm --workspace apps/cms run build
+```
+
+Recommended start command:
+
+```bash
+npm --workspace apps/cms run start
+```
+
+Set these CMS environment variables in the backend hosting service:
+
+```env
+HOST=0.0.0.0
+PORT=1337
+NODE_ENV=production
+PUBLIC_URL=https://cms.plantxchanger.com
+
+APP_KEYS=replace-with-four-comma-separated-random-values
+API_TOKEN_SALT=replace-with-random-value
+ADMIN_JWT_SECRET=replace-with-random-value
+TRANSFER_TOKEN_SALT=replace-with-random-value
+ENCRYPTION_KEY=replace-with-random-value
+JWT_SECRET=replace-with-random-value
+
+DATABASE_CLIENT=postgres
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
+DATABASE_SSL=true
+DATABASE_SSL_REJECT_UNAUTHORIZED=false
+DATABASE_POOL_MIN=2
+DATABASE_POOL_MAX=10
+
+PLANTXCHANGE_SEED=false
+```
+
+Generate secrets locally with:
+
+```powershell
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+Run it several times and use different values for each secret.
+
+After CMS deployment:
+
+1. Open `https://cms.plantxchanger.com/admin`.
+2. Create the first administrator account.
+3. Add the real site settings: email, WhatsApp number, company name, SEO defaults.
+4. Add categories and equipment records.
+5. Create API tokens:
+   - Read token: read access for `Category`, `Equipment`, `Media`, and `Site Setting`.
+   - Write token: create/update access for `Inquiry`.
+
+## 3. Frontend
+
+Deploy `apps/web` as the public frontend.
+
+If the deployment provider asks for the project directory, use:
+
+```text
+apps/web
+```
+
+Recommended build command from the repository root:
+
+```bash
+npm install
+npm --workspace apps/web run build
+```
+
+Recommended start command:
+
+```bash
+npm --workspace apps/web run start
+```
+
+Set these web environment variables in the frontend hosting service:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://www.plantxchanger.com
+NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL=sales@plantxchange.com
+NEXT_PUBLIC_FALLBACK_WHATSAPP_NUMBER=+8613800000000
+
+STRAPI_URL=https://cms.plantxchanger.com
+STRAPI_READ_TOKEN=replace-with-strapi-read-token
+STRAPI_WRITE_TOKEN=replace-with-strapi-write-token
+```
+
+Security rules:
+
+- `NEXT_PUBLIC_*` variables are visible in browser code.
+- `STRAPI_READ_TOKEN` and `STRAPI_WRITE_TOKEN` must stay server-side only.
+- Do not put token values in GitHub, screenshots, or public issue comments.
+
+## 4. DNS
+
+Use this DNS layout:
+
+| Hostname | Target |
+| --- | --- |
+| `www.plantxchanger.com` | Frontend deployment |
+| `plantxchanger.com` | Redirect to `https://www.plantxchanger.com` |
+| `cms.plantxchanger.com` | Strapi backend deployment |
+
+Enable HTTPS for all hostnames.
+
+## 5. Pre-Launch Verification
+
+Run from the repository root before deploying:
 
 ```powershell
 npm run test:web
@@ -21,122 +175,43 @@ npm run build:web
 npm run build:cms
 ```
 
-## 2. Deploy Strapi CMS
-
-Strapi should be deployed first because the Next.js website reads equipment, category, site settings, and inquiry records from it.
-
-Recommended production settings:
-
-- Use PostgreSQL for production data if the hosting provider supports it.
-- Keep the Strapi admin URL private or protected.
-- Turn off sample seeding after the first production seed if real content is already entered.
-
-Required CMS environment variables:
-
-```env
-HOST=0.0.0.0
-PORT=1337
-APP_KEYS=replace-with-production-random-values
-API_TOKEN_SALT=replace-with-production-random-value
-ADMIN_JWT_SECRET=replace-with-production-random-value
-TRANSFER_TOKEN_SALT=replace-with-production-random-value
-ENCRYPTION_KEY=replace-with-production-random-value
-JWT_SECRET=replace-with-production-random-value
-DATABASE_CLIENT=postgres
-DATABASE_URL=replace-with-production-postgres-url
-PLANTXCHANGE_SEED=false
-```
-
-After Strapi is live, create two API tokens:
-
-- Read token: read access for Category, Equipment, Media, and Site Settings.
-- Write token: create and update access for Inquiry.
-
-## 3. Deploy Next.js Web
-
-Set the app root to `apps/web` if the deployment platform asks for a project directory.
-
-Build command:
-
-```powershell
-npm --workspace apps/web run build
-```
-
-Start command:
-
-```powershell
-npm --workspace apps/web run start
-```
-
-Required web environment variables:
-
-```env
-NEXT_PUBLIC_SITE_URL=https://www.plantxchanger.com
-NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL=sales@plantxchange.com
-NEXT_PUBLIC_FALLBACK_WHATSAPP_NUMBER=+8613800000000
-STRAPI_URL=https://replace-with-your-live-strapi-url
-STRAPI_READ_TOKEN=replace-with-strapi-read-token
-STRAPI_WRITE_TOKEN=replace-with-strapi-write-token
-```
-
-Keep `STRAPI_READ_TOKEN` and `STRAPI_WRITE_TOKEN` server-side only. Do not expose them in browser code or public docs.
-
-## 4. Connect The Domain
-
-Point the domain to the web deployment:
-
-- `www.plantxchanger.com` should point to the Next.js web app.
-- Redirect `plantxchanger.com` to `https://www.plantxchanger.com`.
-- Enable HTTPS for both root and `www`.
-
-If Strapi uses a subdomain, use something like:
-
-```text
-cms.plantxchanger.com
-```
-
-Do not put Strapi admin under the main public website path.
-
-## 5. Post-Launch SEO Checks
-
-After DNS and HTTPS are live, verify these URLs in a browser:
-
-```text
-https://www.plantxchanger.com/
-https://www.plantxchanger.com/robots.txt
-https://www.plantxchanger.com/sitemap.xml
-https://www.plantxchanger.com/catalog
-```
-
-The sitemap and canonical tags must use:
-
-```text
-https://www.plantxchanger.com
-```
-
-Then submit the sitemap in Google Search Console:
-
-```text
-https://www.plantxchanger.com/sitemap.xml
-```
+If local `node_modules` is unreliable on Windows, verify on the deployment provider build logs or a clean CI environment. The production build must run from a clean install.
 
 ## 6. Production Smoke Test
 
-Test these workflows after launch:
+After DNS and HTTPS are live, verify:
 
-- Browse catalog.
+```text
+https://www.plantxchanger.com/
+https://www.plantxchanger.com/catalog
+https://www.plantxchanger.com/robots.txt
+https://www.plantxchanger.com/sitemap.xml
+https://cms.plantxchanger.com/admin
+```
+
+Test workflows:
+
+- Open the homepage and catalog.
 - Open an equipment detail page.
 - Submit a buyer quote request.
 - Confirm the inquiry appears in Strapi.
+- Update the inquiry status in Strapi.
 - Confirm email and WhatsApp links are correct.
-- Check `/quotes` is still `noindex`.
+- Confirm `/quotes` remains `noindex`.
 
-## 7. Rollback Plan
+Submit this sitemap in Google Search Console:
 
-Before changing DNS or promoting production, keep the previous deployment available.
+```text
+https://www.plantxchanger.com/sitemap.xml
+```
+
+## 7. Rollback
+
+Before changing DNS, keep the previous deployment available.
 
 If launch fails:
 
-1. Roll back the web deployment to the previous build.
-2. Keep Strapi database unchanged unless a migration caused the failure.
-3. Re-test `/robots.txt`, `/sitemap.xml`, catalog, and inquiry submission before trying again.
+1. Roll back the frontend deployment first.
+2. Keep the PostgreSQL database unchanged unless a migration caused the failure.
+3. Roll back the CMS deployment if Strapi admin or APIs fail.
+4. Re-test sitemap, catalog, detail pages, and inquiry submission before retrying.

@@ -11,6 +11,7 @@ const EQUIPMENT_POPULATE = {
   specifications: true,
   features: true,
 };
+const EQUIPMENT_API_PATH = "/api/equipment-items";
 
 function filterFallbackEquipment(searchParams: {
   search?: string;
@@ -76,7 +77,7 @@ export async function getFeaturedEquipment(): Promise<EquipmentSummary[]> {
   }
 
   try {
-    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>(EQUIPMENT_API_PATH, {
       query: {
         filters: { isFeatured: { $eq: true } },
         populate: EQUIPMENT_POPULATE,
@@ -97,7 +98,7 @@ export async function getEquipmentBySlug(slug: string): Promise<EquipmentSummary
   }
 
   try {
-    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>(EQUIPMENT_API_PATH, {
       query: {
         filters: { slug: { $eq: slug } },
         populate: EQUIPMENT_POPULATE,
@@ -137,7 +138,7 @@ export async function getCatalogEquipment(searchParams: {
   }
 
   try {
-    const response = await strapiFetch<{ data: unknown[] }>("/api/equipment", {
+    const response = await strapiFetch<{ data: unknown[] }>(EQUIPMENT_API_PATH, {
       query: {
         filters,
         populate: EQUIPMENT_POPULATE,
