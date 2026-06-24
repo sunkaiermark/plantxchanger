@@ -1,7 +1,12 @@
-import { hasStrapiReadConfig } from "@/lib/env";
+import { hasPostgresConfig, hasStrapiReadConfig } from "@/lib/env";
 import { fallbackQuotes } from "@/lib/fallback-quotes";
 import { buildInquiryCreatePayload } from "@/lib/inquiries/payload";
 import type { InquiryInput } from "@/lib/inquiries/validation";
+import {
+  createInquiryInPostgres,
+  getQuoteRequestsFromPostgres,
+  updateInquiryStatusInPostgres,
+} from "@/lib/postgres/inquiries";
 import { strapiFetch } from "./client";
 import { normalizeInquiry } from "./normalize";
 import type { InquirySummary, QuoteStatus } from "./types";
@@ -13,6 +18,14 @@ export function isQuoteStatus(status: string): status is QuoteStatus {
 }
 
 export async function getQuoteRequests(): Promise<InquirySummary[]> {
+  if (hasPostgresConfig()) {
+    try {
+      return await getQuoteRequestsFromPostgres();
+    } catch {
+      return fallbackQuotes;
+    }
+  }
+
   if (!hasStrapiReadConfig()) {
     return fallbackQuotes;
   }
@@ -37,6 +50,10 @@ export async function createInquiry(
   input: InquiryInput,
   meta: { userAgent?: string | null; ipAddress?: string | null },
 ): Promise<InquirySummary> {
+  if (hasPostgresConfig()) {
+    return createInquiryInPostgres(input, meta);
+  }
+
   const response = await strapiFetch<{ data: unknown }>("/api/inquiries", {
     mode: "write",
     init: {
@@ -54,6 +71,10 @@ export async function updateInquiryStatus(
 ): Promise<InquirySummary> {
   if (!isQuoteStatus(status)) {
     throw new Error(`Unsupported quote status: ${status}`);
+  }
+
+  if (hasPostgresConfig()) {
+    return updateInquiryStatusInPostgres(documentId, status);
   }
 
   const response = await strapiFetch<{ data: unknown }>(
