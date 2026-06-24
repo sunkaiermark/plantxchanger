@@ -223,7 +223,7 @@ export function normalizeSiteSettings(item: unknown): SiteSettings {
 
   return {
     siteName: stringOrDefault(entity.siteName, "PlantXchange"),
-    contactEmail: stringOrDefault(entity.contactEmail, "sales@plantxchange.com"),
+    contactEmail: stringOrDefault(entity.contactEmail, "sales@plantxchanger.com"),
     whatsappNumber: stringOrDefault(entity.whatsappNumber, "+8613800000000"),
     whatsappDisplayLabel: stringOrDefault(entity.whatsappDisplayLabel, "WhatsApp"),
     defaultSeoTitle: optionalString(entity.defaultSeoTitle),

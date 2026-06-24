@@ -394,7 +394,7 @@ export const fallbackEquipment: EquipmentSummary[] = [
 
 export const fallbackSiteSettings: SiteSettings = {
   siteName: "PlantXchange",
-  contactEmail: "sales@plantxchange.com",
+  contactEmail: "sales@plantxchanger.com",
   whatsappNumber: "+8613800000000",
   whatsappDisplayLabel: "WhatsApp",
   defaultSeoTitle: "PlantXchange | Used Industrial Process Equipment",
