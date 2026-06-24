@@ -1,4 +1,4 @@
-import { hasStrapiWriteConfig } from "@/lib/env";
+import { hasInquiryWriteConfig } from "@/lib/env";
 import { isQuoteStatus, updateInquiryStatus } from "@/lib/strapi/inquiries";
 import { NextResponse } from "next/server";
 
@@ -16,7 +16,7 @@ export async function PATCH(
     );
   }
 
-  if (!hasStrapiWriteConfig()) {
+  if (!hasInquiryWriteConfig()) {
     return NextResponse.json(
       {
         ok: false,

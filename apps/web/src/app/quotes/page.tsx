@@ -11,6 +11,8 @@ export const metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+
 const statusStyles: Record<QuoteStatus, string> = {
   pending: "bg-[#2f343b] text-white",
   responded: "bg-[#287cff] text-white",

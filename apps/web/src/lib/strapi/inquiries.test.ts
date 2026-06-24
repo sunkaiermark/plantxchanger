@@ -4,6 +4,7 @@ import { createInquiry, getQuoteRequests, updateInquiryStatus } from "./inquirie
 
 const originalFetch = globalThis.fetch;
 const originalEnv = {
+  DATABASE_URL: process.env.DATABASE_URL,
   STRAPI_READ_TOKEN: process.env.STRAPI_READ_TOKEN,
   STRAPI_URL: process.env.STRAPI_URL,
   STRAPI_WRITE_TOKEN: process.env.STRAPI_WRITE_TOKEN,
@@ -20,6 +21,7 @@ function restoreEnv() {
 }
 
 function setStrapiEnv() {
+  delete process.env.DATABASE_URL;
   process.env.STRAPI_URL = "https://cms.example.test";
   process.env.STRAPI_READ_TOKEN = "read-token";
   process.env.STRAPI_WRITE_TOKEN = "write-token";

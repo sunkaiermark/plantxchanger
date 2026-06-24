@@ -22,6 +22,18 @@ export function hasStrapiWriteConfig(): boolean {
   return Boolean(getServerEnv("STRAPI_URL") && getServerEnv("STRAPI_WRITE_TOKEN"));
 }
 
+export function hasPostgresConfig(): boolean {
+  return Boolean(getServerEnv("DATABASE_URL"));
+}
+
+export function hasInquiryReadConfig(): boolean {
+  return hasPostgresConfig() || hasStrapiReadConfig();
+}
+
+export function hasInquiryWriteConfig(): boolean {
+  return hasPostgresConfig() || hasStrapiWriteConfig();
+}
+
 export function getFallbackContactEmail(): string {
   return process.env.NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL ?? "sales@plantxchanger.com";
 }
