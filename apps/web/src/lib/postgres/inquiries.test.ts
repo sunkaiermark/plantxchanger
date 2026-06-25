@@ -4,6 +4,7 @@ import type { InquiryInput } from "@/lib/inquiries/validation";
 import {
   createInquiryInPostgres,
   getAdminInquiriesFromPostgres,
+  getAdminInquiryByIdFromPostgres,
   getQuoteRequestsFromPostgres,
   updateAdminInquiryInPostgres,
   updateInquiryStatusInPostgres,
@@ -149,6 +150,29 @@ test("getAdminInquiriesFromPostgres filters and searches inquiries for admin use
   assert.ok(fake.calls[13].values.includes("qualified"));
   assert.ok(fake.calls[13].values.includes("buyer"));
   assert.equal(fake.calls[13].values.filter((value) => value === "%ammonia%").length, 8);
+});
+
+test("getAdminInquiryByIdFromPostgres returns one normalized inquiry by document id", async () => {
+  const fake = createFakeSql([...schemaResponses(), [storedRow]]);
+
+  const result = await getAdminInquiryByIdFromPostgres("inq-test-1", { sql: fake.sql });
+
+  assert.equal(result?.documentId, "inq-test-1");
+  assert.equal(result?.equipmentTitleSnapshot, "Complete Ammonia Plant 1000 MTPD");
+  assertInquirySchemaMigration(fake.calls);
+  assert.match(fake.calls[13].text, /FROM inquiries/);
+  assert.match(fake.calls[13].text, /WHERE document_id = \?/);
+  assert.match(fake.calls[13].text, /LIMIT 1/);
+  assert.deepEqual(fake.calls[13].values, ["inq-test-1"]);
+});
+
+test("getAdminInquiryByIdFromPostgres returns null when missing", async () => {
+  const fake = createFakeSql([...schemaResponses(), []]);
+
+  const result = await getAdminInquiryByIdFromPostgres("missing", { sql: fake.sql });
+
+  assert.equal(result, null);
+  assertInquirySchemaMigration(fake.calls);
 });
 
 test("updateAdminInquiryInPostgres updates status and internal note", async () => {

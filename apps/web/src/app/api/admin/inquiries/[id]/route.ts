@@ -1,7 +1,10 @@
 import { requireAdminSession, isAdminUnauthorizedError, unauthorizedAdminResponse } from "@/lib/admin/route-auth";
 import { adminInquiryUpdateSchema } from "@/lib/admin/validation";
 import { getPostgresSql } from "@/lib/postgres/client";
-import { updateAdminInquiryInPostgres } from "@/lib/postgres/inquiries";
+import {
+  getAdminInquiryByIdFromPostgres,
+  updateAdminInquiryInPostgres,
+} from "@/lib/postgres/inquiries";
 import { NextResponse } from "next/server";
 
 type RouteContext = {
@@ -13,6 +16,19 @@ const validationError = () =>
 
 const notFound = () =>
   NextResponse.json({ ok: false, message: "Inquiry not found." }, { status: 404 });
+
+export async function GET(_request: Request, context: RouteContext) {
+  try {
+    await requireAdminSession();
+    const { id } = await context.params;
+    const data = await getAdminInquiryByIdFromPostgres(id, { sql: getPostgresSql() });
+
+    return data ? NextResponse.json({ ok: true, data }) : notFound();
+  } catch (error) {
+    if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
+    return NextResponse.json({ ok: false, message: "Could not load inquiry." }, { status: 500 });
+  }
+}
 
 export async function PUT(request: Request, context: RouteContext) {
   try {

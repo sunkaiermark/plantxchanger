@@ -236,6 +236,23 @@ export async function getAdminInquiriesFromPostgres(
   return rows.map(normalizeInquiryRow);
 }
 
+export async function getAdminInquiryByIdFromPostgres(
+  documentId: string,
+  options?: StoreOptions,
+): Promise<InquirySummary | null> {
+  const sql = getSql(options);
+  await ensureInquirySchema(sql);
+
+  const rows = await sql`
+    SELECT *
+    FROM inquiries
+    WHERE document_id = ${documentId}
+    LIMIT 1
+  `;
+
+  return rows[0] ? normalizeInquiryRow(rows[0]) : null;
+}
+
 export async function updateAdminInquiryInPostgres(
   documentId: string,
   input: AdminInquiryUpdateInput,
