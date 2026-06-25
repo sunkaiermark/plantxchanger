@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
-import { fallbackEquipment } from "./fallback-data";
+import { fallbackCategories, fallbackEquipment } from "./fallback-data";
 import { readPostgresFirst } from "./strapi/equipment";
 import {
   buildRobotsPolicy,
@@ -48,9 +48,12 @@ test("getCanonicalUrl defaults to the public PlantXchanger domain", () => {
 
 test("isPublicIndexablePath rejects private routes and accepts public routes", () => {
   assert.equal(isPublicIndexablePath("/admin"), false);
+  assert.equal(isPublicIndexablePath("/admin/"), false);
+  assert.equal(isPublicIndexablePath("/admin/login"), false);
   assert.equal(isPublicIndexablePath("/admin/equipment"), false);
   assert.equal(isPublicIndexablePath("/administrator"), true);
   assert.equal(isPublicIndexablePath("https://www.plantxchanger.com/admin"), false);
+  assert.equal(isPublicIndexablePath("/api"), false);
   assert.equal(isPublicIndexablePath("/api/equipment-items"), false);
   assert.equal(isPublicIndexablePath("/apiary"), true);
   assert.equal(isPublicIndexablePath("/quotes"), false);
@@ -135,9 +138,9 @@ test("buildEquipmentJsonLd returns Product schema with offer and seller context"
   assert.equal(jsonLd.offers.priceCurrency, "USD");
 });
 
-test("buildSitemapEntries includes public pages and equipment but excludes private quote dashboard", () => {
+test("buildSitemapEntries includes only public static, equipment, and category URLs", () => {
   process.env.NEXT_PUBLIC_SITE_URL = "https://www.plantxchange.com";
-  const entries = buildSitemapEntries(fallbackEquipment.slice(0, 2));
+  const entries = buildSitemapEntries(fallbackEquipment.slice(0, 2), fallbackCategories.slice(0, 2));
   const urls = entries.map((entry) => entry.url);
 
   assert.ok(urls.includes("https://www.plantxchanger.com/"));
@@ -145,7 +148,13 @@ test("buildSitemapEntries includes public pages and equipment but excludes priva
   assert.ok(urls.includes("https://www.plantxchanger.com/sell"));
   assert.ok(urls.includes("https://www.plantxchanger.com/about"));
   assert.ok(urls.includes(`https://www.plantxchanger.com/equipment/${fallbackEquipment[0].slug}`));
-  assert.ok(!urls.includes("https://www.plantxchanger.com/quotes"));
+  assert.ok(urls.includes(`https://www.plantxchanger.com/catalog?category=${fallbackCategories[0].slug}`));
+  assert.ok(urls.includes(`https://www.plantxchanger.com/catalog?category=${fallbackCategories[1].slug}`));
+  assert.ok(urls.every((url) => !url.includes("/admin")));
+  assert.ok(urls.every((url) => !url.includes("/api")));
+  assert.ok(urls.every((url) => !url.includes("/quotes")));
+  assert.ok(urls.every((url) => !url.includes("/login")));
+  assert.ok(urls.every((url) => !url.includes("/cms")));
 });
 
 test("buildRobotsPolicy allows search and AI crawlers while blocking private routes", () => {
@@ -164,6 +173,8 @@ test("buildRobotsPolicy allows search and AI crawlers while blocking private rou
   assert.ok(userAgents.includes("GPTBot"));
   assert.ok(rules.every((rule) => {
     const disallow = Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow];
-    return disallow.includes("/api/") && disallow.includes("/quotes");
+    return ["/admin", "/admin/", "/api", "/api/", "/quotes"].every((path) =>
+      disallow.includes(path),
+    );
   }));
 });

@@ -210,7 +210,7 @@ export function buildSitemapEntries(
 }
 
 export function buildRobotsPolicy(): MetadataRoute.Robots {
-  const privatePaths = ["/api/", "/quotes"];
+  const privatePaths = ["/admin", "/admin/", "/api", "/api/", "/quotes"];
 
   return {
     host: getPublicSiteUrl(),

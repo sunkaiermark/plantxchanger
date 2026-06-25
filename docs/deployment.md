@@ -59,14 +59,18 @@ Use these Vercel settings:
 Set these Vercel environment variables for Production:
 
 ```env
+ADMIN_PASSWORD=change-this-before-launch
+ADMIN_SESSION_SECRET=at-least-32-random-characters
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 NEXT_PUBLIC_SITE_URL=https://www.plantxchanger.com
 NEXT_PUBLIC_FALLBACK_CONTACT_EMAIL=sales@plantxchanger.com
 NEXT_PUBLIC_FALLBACK_WHATSAPP_NUMBER=+8613800000000
-DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 ```
 
 Security rules:
 
+- `ADMIN_PASSWORD` protects `/admin/login` and must be unique to production.
+- `ADMIN_SESSION_SECRET` signs private admin sessions and must not be reused from local development.
 - `DATABASE_URL` must stay server-side only.
 - Do not add Strapi tokens for the Vercel-only launch.
 - Do not paste database credentials into GitHub issues, PRs, screenshots, or chat.
@@ -101,6 +105,7 @@ After deployment and DNS are live, verify:
 ```text
 https://www.plantxchanger.com/
 https://www.plantxchanger.com/catalog
+https://www.plantxchanger.com/admin/login
 https://www.plantxchanger.com/robots.txt
 https://www.plantxchanger.com/sitemap.xml
 https://www.plantxchanger.com/quotes
@@ -112,10 +117,13 @@ Test workflows:
 - Open an equipment detail page.
 - Submit a buyer quote request.
 - Confirm the form returns a saved inquiry confirmation.
+- Open `/admin/login` and confirm the production admin password signs in.
 - Open `/quotes` and confirm the new inquiry appears.
 - Update a quote status from the quote dashboard if that control is available.
 - Confirm email and WhatsApp links are correct.
-- Confirm `/quotes` remains `noindex`.
+- Confirm `robots.txt` blocks `/admin`, `/admin/`, `/api/`, and `/quotes` for search and AI crawlers while allowing `/`, `/catalog`, `/sell`, `/about`, and public `/equipment/...` pages.
+- Confirm `/admin`, `/api`, and `/quotes` do not appear in `sitemap.xml`; only public static pages, public equipment detail pages, and public `/catalog?category=...` URLs should be listed.
+- Confirm `/admin`, `/api`, and `/quotes` remain private or `noindex`; `/admin/login` is the only public entry point for admin authentication.
 
 Submit this sitemap in Google Search Console:
 
