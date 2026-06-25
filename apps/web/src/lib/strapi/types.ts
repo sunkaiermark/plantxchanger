@@ -8,6 +8,7 @@ export interface CategorySummary {
   name: string;
   slug: string;
   description?: string;
+  imageUrl?: string;
   sortOrder: number;
   seoTitle?: string;
   seoDescription?: string;
@@ -56,6 +57,7 @@ export interface EquipmentSummary {
   gallery: MediaAsset[];
   sellerDisplayName?: string;
   isFeatured: boolean;
+  isPublished?: boolean;
   seoTitle?: string;
   seoDescription?: string;
 }

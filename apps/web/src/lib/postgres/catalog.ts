@@ -106,11 +106,14 @@ function readCount(value: unknown): number {
 }
 
 export function mapCategoryRow(row: Row): CategorySummary {
+  const imageUrl = optionalString(row.image_url);
+
   return {
     documentId: requiredString(row.id),
     name: requiredString(row.name, "Untitled category"),
     slug: requiredString(row.slug, "category"),
     description: optionalString(row.description),
+    ...(imageUrl ? { imageUrl } : {}),
     sortOrder: numberOrDefault(row.sort_order, 0),
     seoTitle: optionalString(row.seo_title),
     seoDescription: optionalString(row.seo_description),
@@ -161,6 +164,7 @@ export function mapEquipmentRow(row: Row): EquipmentSummary {
     })),
     sellerDisplayName: optionalString(row.seller_display_name),
     isFeatured: booleanOrDefault(row.is_featured),
+    isPublished: booleanOrDefault(row.is_published),
     seoTitle: optionalString(row.seo_title),
     seoDescription: optionalString(row.seo_description),
   };
