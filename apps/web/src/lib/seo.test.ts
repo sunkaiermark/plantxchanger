@@ -1,13 +1,16 @@
 import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
-import { fallbackEquipment } from "./fallback-data";
+import { fallbackCategories, fallbackEquipment } from "./fallback-data";
+import { readPostgresFirst } from "./strapi/equipment";
 import {
   buildRobotsPolicy,
   buildEquipmentJsonLd,
   buildEquipmentMetadata,
   buildSitemapEntries,
   canonicalUrl,
+  getCanonicalUrl,
   getPublicSiteUrl,
+  isPublicIndexablePath,
 } from "./seo";
 
 const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -21,13 +24,84 @@ afterEach(() => {
 });
 
 test("canonicalUrl builds absolute production URLs without duplicate slashes", () => {
-  process.env.NEXT_PUBLIC_SITE_URL = "https://www.plantxchange.com/";
+  process.env.NEXT_PUBLIC_SITE_URL = "https://local-preview.example/";
 
-  assert.equal(getPublicSiteUrl(), "https://www.plantxchange.com");
-  assert.equal(canonicalUrl("/catalog"), "https://www.plantxchange.com/catalog");
+  assert.equal(getPublicSiteUrl(), "https://local-preview.example");
+  assert.equal(canonicalUrl("/catalog"), "https://www.plantxchanger.com/catalog");
   assert.equal(
     canonicalUrl("equipment/ici-low-pressure-methanol-plant-800000-mt-yr"),
-    "https://www.plantxchange.com/equipment/ici-low-pressure-methanol-plant-800000-mt-yr",
+    "https://www.plantxchanger.com/equipment/ici-low-pressure-methanol-plant-800000-mt-yr",
+  );
+});
+
+test("getCanonicalUrl defaults to the public PlantXchanger domain", () => {
+  delete process.env.NEXT_PUBLIC_SITE_URL;
+
+  assert.equal(getCanonicalUrl(), "https://www.plantxchanger.com/");
+  assert.equal(getCanonicalUrl("/catalog"), "https://www.plantxchanger.com/catalog");
+  assert.equal(getCanonicalUrl("equipment/demo"), "https://www.plantxchanger.com/equipment/demo");
+  assert.equal(
+    getCanonicalUrl("https://example.com/catalog?category=reactors"),
+    "https://www.plantxchanger.com/catalog?category=reactors",
+  );
+});
+
+test("isPublicIndexablePath rejects private routes and accepts public routes", () => {
+  assert.equal(isPublicIndexablePath("/admin"), false);
+  assert.equal(isPublicIndexablePath("/admin/"), false);
+  assert.equal(isPublicIndexablePath("/admin/login"), false);
+  assert.equal(isPublicIndexablePath("/admin/equipment"), false);
+  assert.equal(isPublicIndexablePath("/administrator"), true);
+  assert.equal(isPublicIndexablePath("https://www.plantxchanger.com/admin"), false);
+  assert.equal(isPublicIndexablePath("/api"), false);
+  assert.equal(isPublicIndexablePath("/api/equipment-items"), false);
+  assert.equal(isPublicIndexablePath("/apiary"), true);
+  assert.equal(isPublicIndexablePath("/quotes"), false);
+  assert.equal(isPublicIndexablePath("/quotes/new"), false);
+  assert.equal(isPublicIndexablePath("/quotes-old"), true);
+  assert.equal(isPublicIndexablePath("/quotes?status=new"), false);
+  assert.equal(isPublicIndexablePath("/"), true);
+  assert.equal(isPublicIndexablePath("/catalog?category=reactors"), true);
+  assert.equal(isPublicIndexablePath("/equipment/demo"), true);
+});
+
+test("readPostgresFirst treats empty and null Postgres results as authoritative", async () => {
+  assert.deepEqual(
+    await readPostgresFirst({
+      hasPostgres: true,
+      readPostgres: async () => [],
+      readFallback: async () => ["fallback"],
+    }),
+    [],
+  );
+  assert.equal(
+    await readPostgresFirst({
+      hasPostgres: true,
+      readPostgres: async () => null,
+      readFallback: async () => "fallback",
+    }),
+    null,
+  );
+});
+
+test("readPostgresFirst falls back only without Postgres config or after Postgres throws", async () => {
+  assert.equal(
+    await readPostgresFirst({
+      hasPostgres: false,
+      readPostgres: async () => "postgres",
+      readFallback: async () => "fallback",
+    }),
+    "fallback",
+  );
+  assert.equal(
+    await readPostgresFirst({
+      hasPostgres: true,
+      readPostgres: async () => {
+        throw new Error("database unavailable");
+      },
+      readFallback: async () => "fallback",
+    }),
+    "fallback",
   );
 });
 
@@ -44,7 +118,7 @@ test("buildEquipmentMetadata creates keyword-specific title, description, and ca
   assert.match(String(metadata.description), /used chemical plant/i);
   assert.match(String(metadata.description), /United States/i);
   assert.deepEqual(metadata.alternates, {
-    canonical: "https://www.plantxchange.com/equipment/ici-low-pressure-methanol-plant-800000-mt-yr",
+    canonical: "https://www.plantxchanger.com/equipment/ici-low-pressure-methanol-plant-800000-mt-yr",
   });
   assert.equal(metadata.openGraph?.title, metadata.title);
 });
@@ -60,21 +134,27 @@ test("buildEquipmentJsonLd returns Product schema with offer and seller context"
   assert.equal(jsonLd.name, equipment.title);
   assert.equal(jsonLd.sku, equipment.reference);
   assert.equal(jsonLd.brand.name, equipment.make);
-  assert.equal(jsonLd.offers.url, `https://www.plantxchange.com/equipment/${equipment.slug}`);
+  assert.equal(jsonLd.offers.url, `https://www.plantxchanger.com/equipment/${equipment.slug}`);
   assert.equal(jsonLd.offers.priceCurrency, "USD");
 });
 
-test("buildSitemapEntries includes public pages and equipment but excludes private quote dashboard", () => {
+test("buildSitemapEntries includes only public static, equipment, and category URLs", () => {
   process.env.NEXT_PUBLIC_SITE_URL = "https://www.plantxchange.com";
-  const entries = buildSitemapEntries(fallbackEquipment.slice(0, 2));
+  const entries = buildSitemapEntries(fallbackEquipment.slice(0, 2), fallbackCategories.slice(0, 2));
   const urls = entries.map((entry) => entry.url);
 
-  assert.ok(urls.includes("https://www.plantxchange.com/"));
-  assert.ok(urls.includes("https://www.plantxchange.com/catalog"));
-  assert.ok(urls.includes("https://www.plantxchange.com/sell"));
-  assert.ok(urls.includes("https://www.plantxchange.com/about"));
-  assert.ok(urls.includes(`https://www.plantxchange.com/equipment/${fallbackEquipment[0].slug}`));
-  assert.ok(!urls.includes("https://www.plantxchange.com/quotes"));
+  assert.ok(urls.includes("https://www.plantxchanger.com/"));
+  assert.ok(urls.includes("https://www.plantxchanger.com/catalog"));
+  assert.ok(urls.includes("https://www.plantxchanger.com/sell"));
+  assert.ok(urls.includes("https://www.plantxchanger.com/about"));
+  assert.ok(urls.includes(`https://www.plantxchanger.com/equipment/${fallbackEquipment[0].slug}`));
+  assert.ok(urls.includes(`https://www.plantxchanger.com/catalog?category=${fallbackCategories[0].slug}`));
+  assert.ok(urls.includes(`https://www.plantxchanger.com/catalog?category=${fallbackCategories[1].slug}`));
+  assert.ok(urls.every((url) => !url.includes("/admin")));
+  assert.ok(urls.every((url) => !url.includes("/api")));
+  assert.ok(urls.every((url) => !url.includes("/quotes")));
+  assert.ok(urls.every((url) => !url.includes("/login")));
+  assert.ok(urls.every((url) => !url.includes("/cms")));
 });
 
 test("buildRobotsPolicy allows search and AI crawlers while blocking private routes", () => {
@@ -86,13 +166,15 @@ test("buildRobotsPolicy allows search and AI crawlers while blocking private rou
     Array.isArray(rule.userAgent) ? rule.userAgent : [rule.userAgent],
   );
 
-  assert.equal(policy.sitemap, "https://www.plantxchange.com/sitemap.xml");
+  assert.equal(policy.sitemap, "https://www.plantxchanger.com/sitemap.xml");
   assert.ok(userAgents.includes("*"));
   assert.ok(userAgents.includes("Googlebot"));
   assert.ok(userAgents.includes("OAI-SearchBot"));
   assert.ok(userAgents.includes("GPTBot"));
   assert.ok(rules.every((rule) => {
     const disallow = Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow];
-    return disallow.includes("/api/") && disallow.includes("/quotes");
+    return ["/admin", "/admin/", "/api", "/api/", "/quotes"].every((path) =>
+      disallow.includes(path),
+    );
   }));
 });

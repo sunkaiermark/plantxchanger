@@ -7,7 +7,7 @@ export function buildInquiryCreatePayload(
   return {
     data: {
       inquiryType: input.inquiryType,
-      status: "pending",
+      status: "new",
       relatedEquipment: input.relatedEquipmentDocumentId,
       equipmentReferenceSnapshot: input.equipmentReferenceSnapshot,
       equipmentTitleSnapshot: input.equipmentTitleSnapshot,

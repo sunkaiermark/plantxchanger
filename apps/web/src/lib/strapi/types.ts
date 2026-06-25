@@ -1,13 +1,14 @@
 export type EquipmentCondition = "excellent" | "good" | "fair" | "for-parts";
 export type EquipmentAvailability = "available" | "under-review" | "sold";
 export type EquipmentCurrency = "USD" | "EUR" | "CNY";
-export type QuoteStatus = "pending" | "responded" | "negotiating" | "accepted";
+export type QuoteStatus = "new" | "contacted" | "qualified" | "negotiating" | "closed" | "spam";
 
 export interface CategorySummary {
   documentId: string;
   name: string;
   slug: string;
   description?: string;
+  imageUrl?: string;
   sortOrder: number;
   seoTitle?: string;
   seoDescription?: string;
@@ -56,6 +57,7 @@ export interface EquipmentSummary {
   gallery: MediaAsset[];
   sellerDisplayName?: string;
   isFeatured: boolean;
+  isPublished?: boolean;
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -74,6 +76,7 @@ export interface InquirySummary {
   country?: string;
   message: string;
   sourcePage?: string;
+  internalNote?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -83,6 +86,8 @@ export interface SiteSettings {
   contactEmail: string;
   whatsappNumber: string;
   whatsappDisplayLabel: string;
+  homepageHeadline?: string;
+  homepageIntro?: string;
   defaultSeoTitle?: string;
   defaultSeoDescription?: string;
   footerSummary?: string;
