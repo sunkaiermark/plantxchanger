@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Pencil, Plus } from "lucide-react";
 import { AdminDeleteButton } from "@/components/admin/admin-delete-button";
+import { AdminSeedForm } from "@/components/admin/admin-seed-form";
 import { getPostgresSql } from "@/lib/postgres/client";
 import { listAdminEquipment } from "@/lib/postgres/catalog";
 
@@ -21,6 +22,8 @@ export default async function AdminEquipmentPage() {
           New equipment
         </Link>
       </div>
+
+      <AdminSeedForm />
 
       <div className="admin-table-wrap">
         <table className="admin-table">
