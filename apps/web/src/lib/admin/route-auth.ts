@@ -33,5 +33,5 @@ export function isAdminUnauthorizedError(error: unknown): error is AdminUnauthor
 }
 
 export function unauthorizedAdminResponse() {
-  return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
+  return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 }

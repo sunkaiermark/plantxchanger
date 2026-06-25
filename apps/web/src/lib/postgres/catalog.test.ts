@@ -404,12 +404,19 @@ test("updateAdminEquipment updates key fields including isPublished", async () =
 });
 
 test("deleteAdminEquipment deletes by id", async () => {
-  const fake = createFakeSql([...schemaResponses(), []]);
+  const fake = createFakeSql([...schemaResponses(), [{ id: "eq-1" }]]);
 
   await deleteAdminEquipment(fake.sql, "eq-1");
 
-  assert.match(fake.calls.at(-1)?.text ?? "", /DELETE FROM equipment WHERE id = \?/);
+  assert.match(fake.calls.at(-1)?.text ?? "", /DELETE FROM equipment\s+WHERE id = \?/);
+  assert.match(fake.calls.at(-1)?.text ?? "", /RETURNING id/);
   assert.deepEqual(fake.calls.at(-1)?.values, ["eq-1"]);
+});
+
+test("deleteAdminEquipment throws when the equipment does not exist", async () => {
+  const fake = createFakeSql([...schemaResponses(), []]);
+
+  await assert.rejects(() => deleteAdminEquipment(fake.sql, "missing"), /Equipment not found: missing/);
 });
 
 test("createAdminCategory inserts and maps the returned category", async () => {
@@ -434,12 +441,19 @@ test("updateAdminCategory updates by id and maps the returned category", async (
 });
 
 test("deleteAdminCategory deletes by id", async () => {
-  const fake = createFakeSql([...schemaResponses(), []]);
+  const fake = createFakeSql([...schemaResponses(), [{ id: "cat-1" }]]);
 
   await deleteAdminCategory(fake.sql, "cat-1");
 
-  assert.match(fake.calls.at(-1)?.text ?? "", /DELETE FROM categories WHERE id = \?/);
+  assert.match(fake.calls.at(-1)?.text ?? "", /DELETE FROM categories\s+WHERE id = \?/);
+  assert.match(fake.calls.at(-1)?.text ?? "", /RETURNING id/);
   assert.deepEqual(fake.calls.at(-1)?.values, ["cat-1"]);
+});
+
+test("deleteAdminCategory throws when the category does not exist", async () => {
+  const fake = createFakeSql([...schemaResponses(), []]);
+
+  await assert.rejects(() => deleteAdminCategory(fake.sql, "missing"), /Category not found: missing/);
 });
 
 test("updateAdminSettings upserts global settings", async () => {

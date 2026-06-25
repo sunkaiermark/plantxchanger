@@ -8,7 +8,7 @@ import {
 import { NextResponse } from "next/server";
 
 const unauthorized = () =>
-  NextResponse.json({ ok: false, message: "Invalid password." }, { status: 401 });
+  NextResponse.json({ ok: false, error: "Invalid password." }, { status: 401 });
 
 export async function POST(request: Request) {
   const json = await request.json().catch(() => null);

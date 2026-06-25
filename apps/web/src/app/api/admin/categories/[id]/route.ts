@@ -9,10 +9,10 @@ type RouteContext = {
 };
 
 const validationError = () =>
-  NextResponse.json({ ok: false, message: "Please check the form fields." }, { status: 400 });
+  NextResponse.json({ ok: false, error: "Please check the form fields." }, { status: 400 });
 
 const notFound = () =>
-  NextResponse.json({ ok: false, message: "Category not found." }, { status: 404 });
+  NextResponse.json({ ok: false, error: "Category not found." }, { status: 404 });
 
 export async function PUT(request: Request, context: RouteContext) {
   try {
@@ -26,7 +26,7 @@ export async function PUT(request: Request, context: RouteContext) {
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
     if (isNotFoundError(error)) return notFound();
-    return NextResponse.json({ ok: false, message: "Could not save category." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Could not save category." }, { status: 500 });
   }
 }
 
@@ -39,7 +39,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     return NextResponse.json({ ok: true, data: { id } });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
-    return NextResponse.json({ ok: false, message: "Could not delete category." }, { status: 500 });
+    if (isNotFoundError(error)) return notFound();
+    return NextResponse.json({ ok: false, error: "Could not delete category." }, { status: 500 });
   }
 }
 

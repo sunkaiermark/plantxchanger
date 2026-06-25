@@ -5,7 +5,7 @@ import { getSiteSettingsFromPostgres, updateAdminSettings } from "@/lib/postgres
 import { NextResponse } from "next/server";
 
 const validationError = () =>
-  NextResponse.json({ ok: false, message: "Please check the form fields." }, { status: 400 });
+  NextResponse.json({ ok: false, error: "Please check the form fields." }, { status: 400 });
 
 export async function GET() {
   try {
@@ -15,7 +15,7 @@ export async function GET() {
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
-    return NextResponse.json({ ok: false, message: "Could not load settings." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Could not load settings." }, { status: 500 });
   }
 }
 
@@ -29,6 +29,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
-    return NextResponse.json({ ok: false, message: "Could not save settings." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Could not save settings." }, { status: 500 });
   }
 }

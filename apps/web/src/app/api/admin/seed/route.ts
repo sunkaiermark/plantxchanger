@@ -11,6 +11,6 @@ export async function POST() {
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
-    return NextResponse.json({ ok: false, message: "Could not seed catalog." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Could not seed catalog." }, { status: 500 });
   }
 }

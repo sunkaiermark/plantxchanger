@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
-    return NextResponse.json({ ok: false, message: "Could not load inquiries." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "Could not load inquiries." }, { status: 500 });
   }
 }
 

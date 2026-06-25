@@ -500,7 +500,12 @@ export async function updateAdminEquipment(
 
 export async function deleteAdminEquipment(sql: SqlExecutor, id: string): Promise<void> {
   await ensureCatalogSchema(sql);
-  await sql`DELETE FROM equipment WHERE id = ${id}`;
+  const rows = await sql`
+    DELETE FROM equipment
+    WHERE id = ${id}
+    RETURNING id
+  `;
+  if (!rows[0]) throw new Error(`Equipment not found: ${id}`);
 }
 
 export async function listAdminCategories(sql: SqlExecutor): Promise<CategorySummary[]> {
@@ -556,7 +561,12 @@ export async function updateAdminCategory(
 
 export async function deleteAdminCategory(sql: SqlExecutor, id: string): Promise<void> {
   await ensureCatalogSchema(sql);
-  await sql`DELETE FROM categories WHERE id = ${id}`;
+  const rows = await sql`
+    DELETE FROM categories
+    WHERE id = ${id}
+    RETURNING id
+  `;
+  if (!rows[0]) throw new Error(`Category not found: ${id}`);
 }
 
 export async function updateAdminSettings(
