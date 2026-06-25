@@ -21,9 +21,14 @@ function stringOrDefault(value: unknown, fallback: string): string {
 }
 
 function statusOrDefault(value: unknown): QuoteStatus {
-  return value === "responded" || value === "negotiating" || value === "accepted"
-    ? value
-    : "pending";
+  if (value === "contacted" || value === "qualified" || value === "negotiating" || value === "closed" || value === "spam") {
+    return value;
+  }
+
+  if (value === "responded") return "contacted";
+  if (value === "accepted") return "closed";
+
+  return "new";
 }
 
 function timestampToString(value: unknown): string | undefined {
@@ -59,7 +64,7 @@ async function ensureInquirySchema(sql: SqlExecutor): Promise<void> {
       id BIGSERIAL PRIMARY KEY,
       document_id TEXT UNIQUE NOT NULL,
       inquiry_type TEXT NOT NULL CHECK (inquiry_type IN ('buyer', 'seller')),
-      status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'responded', 'negotiating', 'accepted')),
+      status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'qualified', 'negotiating', 'closed', 'spam')),
       related_equipment_document_id TEXT,
       equipment_reference_snapshot TEXT,
       equipment_title_snapshot TEXT,
@@ -84,6 +89,17 @@ async function ensureInquirySchema(sql: SqlExecutor): Promise<void> {
   await sql`
     CREATE INDEX IF NOT EXISTS inquiries_inquiry_type_created_at_idx
     ON inquiries (inquiry_type, created_at DESC)
+  `;
+
+  await sql`ALTER TABLE inquiries DROP CONSTRAINT IF EXISTS inquiries_status_check`;
+  await sql`UPDATE inquiries SET status = 'new' WHERE status = 'pending'`;
+  await sql`UPDATE inquiries SET status = 'contacted' WHERE status = 'responded'`;
+  await sql`UPDATE inquiries SET status = 'closed' WHERE status = 'accepted'`;
+  await sql`ALTER TABLE inquiries ALTER COLUMN status SET DEFAULT 'new'`;
+  await sql`
+    ALTER TABLE inquiries
+    ADD CONSTRAINT inquiries_status_check
+    CHECK (status IN ('new', 'contacted', 'qualified', 'negotiating', 'closed', 'spam'))
   `;
 
   schemaReady.add(sql);
@@ -127,7 +143,7 @@ export async function createInquiryInPostgres(
     VALUES (
       ${documentId},
       ${input.inquiryType},
-      ${"pending"},
+      ${"new"},
       ${input.relatedEquipmentDocumentId ?? null},
       ${input.equipmentReferenceSnapshot ?? null},
       ${input.equipmentTitleSnapshot ?? null},

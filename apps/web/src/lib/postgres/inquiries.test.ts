@@ -40,7 +40,7 @@ const buyerInquiry: InquiryInput = {
 const storedRow = {
   document_id: "inq-test-1",
   inquiry_type: "buyer",
-  status: "pending",
+  status: "new",
   equipment_reference_snapshot: "PX-R-001",
   equipment_title_snapshot: "Complete Ammonia Plant 1000 MTPD",
   name: "Mark Buyer",
@@ -55,8 +55,21 @@ const storedRow = {
   updated_at: "2026-06-24T00:00:00.000Z",
 };
 
+const schemaResponses = () => Array.from({ length: 8 }, () => []);
+
+function assertInquirySchemaMigration(calls: SqlCall[]) {
+  assert.match(calls[0]?.text ?? "", /CREATE TABLE IF NOT EXISTS inquiries/);
+  assert.match(calls[1]?.text ?? "", /CREATE INDEX IF NOT EXISTS inquiries_inquiry_type_created_at_idx/);
+  assert.match(calls[2]?.text ?? "", /ALTER TABLE inquiries DROP CONSTRAINT IF EXISTS inquiries_status_check/);
+  assert.match(calls[3]?.text ?? "", /UPDATE inquiries SET status = 'new' WHERE status = 'pending'/);
+  assert.match(calls[4]?.text ?? "", /UPDATE inquiries SET status = 'contacted' WHERE status = 'responded'/);
+  assert.match(calls[5]?.text ?? "", /UPDATE inquiries SET status = 'closed' WHERE status = 'accepted'/);
+  assert.match(calls[6]?.text ?? "", /ALTER TABLE inquiries ALTER COLUMN status SET DEFAULT 'new'/);
+  assert.match(calls[7]?.text ?? "", /ALTER TABLE inquiries\s+ADD CONSTRAINT inquiries_status_check/);
+}
+
 test("createInquiryInPostgres stores an inquiry and returns a normalized summary", async () => {
-  const fake = createFakeSql([[], [], [storedRow]]);
+  const fake = createFakeSql([...schemaResponses(), [storedRow]]);
 
   const result = await createInquiryInPostgres(
     buyerInquiry,
@@ -68,35 +81,36 @@ test("createInquiryInPostgres stores an inquiry and returns a normalized summary
   );
 
   assert.equal(result.documentId, "inq-test-1");
-  assert.equal(result.status, "pending");
+  assert.equal(result.status, "new");
   assert.equal(result.equipmentReferenceSnapshot, "PX-R-001");
   assert.equal(result.name, "Mark Buyer");
-  assert.match(fake.calls[0].text, /CREATE TABLE IF NOT EXISTS inquiries/);
-  assert.match(fake.calls[2].text, /INSERT INTO inquiries/);
-  assert.deepEqual(fake.calls[2].values.slice(0, 4), [
+  assertInquirySchemaMigration(fake.calls);
+  assert.match(fake.calls[8].text, /INSERT INTO inquiries/);
+  assert.deepEqual(fake.calls[8].values.slice(0, 4), [
     "inq-test-1",
     "buyer",
-    "pending",
+    "new",
     "equipment-doc-1",
   ]);
-  assert.ok(fake.calls[2].values.includes("node-test"));
-  assert.ok(fake.calls[2].values.includes("127.0.0.1"));
+  assert.ok(fake.calls[8].values.includes("node-test"));
+  assert.ok(fake.calls[8].values.includes("127.0.0.1"));
 });
 
 test("getQuoteRequestsFromPostgres reads buyer inquiries newest first", async () => {
-  const fake = createFakeSql([[], [], [storedRow]]);
+  const fake = createFakeSql([...schemaResponses(), [storedRow]]);
 
   const result = await getQuoteRequestsFromPostgres({ sql: fake.sql });
 
   assert.equal(result.length, 1);
   assert.equal(result[0]?.documentId, "inq-test-1");
   assert.equal(result[0]?.inquiryType, "buyer");
-  assert.match(fake.calls[2].text, /WHERE inquiry_type = 'buyer'/);
-  assert.match(fake.calls[2].text, /ORDER BY created_at DESC/);
+  assertInquirySchemaMigration(fake.calls);
+  assert.match(fake.calls[8].text, /WHERE inquiry_type = 'buyer'/);
+  assert.match(fake.calls[8].text, /ORDER BY created_at DESC/);
 });
 
 test("updateInquiryStatusInPostgres updates status by document id", async () => {
-  const fake = createFakeSql([[], [], [{ ...storedRow, status: "negotiating" }]]);
+  const fake = createFakeSql([...schemaResponses(), [{ ...storedRow, status: "negotiating" }]]);
 
   const result = await updateInquiryStatusInPostgres("inq-test-1", "negotiating", {
     sql: fake.sql,
@@ -104,15 +118,17 @@ test("updateInquiryStatusInPostgres updates status by document id", async () => 
 
   assert.equal(result.documentId, "inq-test-1");
   assert.equal(result.status, "negotiating");
-  assert.match(fake.calls[2].text, /UPDATE inquiries/);
-  assert.deepEqual(fake.calls[2].values, ["negotiating", "inq-test-1"]);
+  assertInquirySchemaMigration(fake.calls);
+  assert.match(fake.calls[8].text, /UPDATE inquiries/);
+  assert.deepEqual(fake.calls[8].values, ["negotiating", "inq-test-1"]);
 });
 
 test("updateInquiryStatusInPostgres throws when the inquiry does not exist", async () => {
-  const fake = createFakeSql([[], [], []]);
+  const fake = createFakeSql([...schemaResponses(), []]);
 
   await assert.rejects(
-    () => updateInquiryStatusInPostgres("missing", "responded", { sql: fake.sql }),
+    () => updateInquiryStatusInPostgres("missing", "contacted", { sql: fake.sql }),
     /Inquiry not found: missing/,
   );
+  assertInquirySchemaMigration(fake.calls);
 });

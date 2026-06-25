@@ -189,11 +189,15 @@ export function normalizeEquipment(item: unknown, strapiUrl: string): EquipmentS
 }
 
 function normalizeQuoteStatus(status: unknown): QuoteStatus {
-  if (status === "responded" || status === "negotiating" || status === "accepted") {
+  if (status === "new" || status === "contacted" || status === "qualified" || status === "negotiating" || status === "closed" || status === "spam") {
     return status;
   }
 
-  return "pending";
+  if (status === "pending") return "new";
+  if (status === "responded") return "contacted";
+  if (status === "accepted") return "closed";
+
+  return "new";
 }
 
 export function normalizeInquiry(item: unknown): InquirySummary {

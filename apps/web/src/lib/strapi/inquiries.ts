@@ -11,7 +11,7 @@ import { strapiFetch } from "./client";
 import { normalizeInquiry } from "./normalize";
 import type { InquirySummary, QuoteStatus } from "./types";
 
-const quoteStatuses = new Set<QuoteStatus>(["pending", "responded", "negotiating", "accepted"]);
+const quoteStatuses = new Set<QuoteStatus>(["new", "contacted", "qualified", "negotiating", "closed", "spam"]);
 
 export function isQuoteStatus(status: string): status is QuoteStatus {
   return quoteStatuses.has(status as QuoteStatus);

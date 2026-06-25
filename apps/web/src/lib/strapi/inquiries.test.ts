@@ -32,7 +32,7 @@ afterEach(() => {
   restoreEnv();
 });
 
-test("createInquiry saves a pending buyer inquiry to Strapi and returns the saved record", async () => {
+test("createInquiry saves a new buyer inquiry to Strapi and returns the saved record", async () => {
   setStrapiEnv();
   let capturedUrl = "";
   let capturedInit: RequestInit | undefined;
@@ -46,7 +46,7 @@ test("createInquiry saves a pending buyer inquiry to Strapi and returns the save
         data: {
           documentId: "inq-doc-1",
           inquiryType: "buyer",
-          status: "pending",
+          status: "new",
           equipmentReferenceSnapshot: "PX-R-001",
           equipmentTitleSnapshot: "10,000 L Reactor",
           name: "Mark",
@@ -76,9 +76,9 @@ test("createInquiry saves a pending buyer inquiry to Strapi and returns the save
   assert.equal(capturedUrl, "https://cms.example.test/api/inquiries");
   assert.equal(capturedInit?.method, "POST");
   assert.equal((capturedInit?.headers as Record<string, string>).Authorization, "Bearer write-token");
-  assert.deepEqual(JSON.parse(String(capturedInit?.body)).data.status, "pending");
+  assert.deepEqual(JSON.parse(String(capturedInit?.body)).data.status, "new");
   assert.equal(inquiry.documentId, "inq-doc-1");
-  assert.equal(inquiry.status, "pending");
+  assert.equal(inquiry.status, "new");
   assert.equal(inquiry.equipmentReferenceSnapshot, "PX-R-001");
 });
 
@@ -95,7 +95,7 @@ test("getQuoteRequests reads buyer inquiries from Strapi before falling back to 
           {
             documentId: "inq-doc-2",
             inquiryType: "buyer",
-            status: "responded",
+            status: "contacted",
             equipmentReferenceSnapshot: "PX-C-5000",
             equipmentTitleSnapshot: "Natural Gas Compressor 5000HP",
             name: "Aisha",
@@ -114,7 +114,7 @@ test("getQuoteRequests reads buyer inquiries from Strapi before falling back to 
   assert.match(capturedUrl, /filters%5BinquiryType%5D%5B%24eq%5D=buyer|filters\[inquiryType\]\[\$eq\]=buyer/);
   assert.equal(quotes.length, 1);
   assert.equal(quotes[0].documentId, "inq-doc-2");
-  assert.equal(quotes[0].status, "responded");
+  assert.equal(quotes[0].status, "contacted");
 });
 
 test("updateInquiryStatus updates negotiation status in Strapi and returns the saved record", async () => {

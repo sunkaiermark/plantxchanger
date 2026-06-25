@@ -2,9 +2,9 @@ import type { InquirySummary } from "./strapi/types";
 
 export const fallbackQuotes: InquirySummary[] = [
   {
-    documentId: "quote-ammonia-pending",
+    documentId: "quote-ammonia-new",
     inquiryType: "buyer",
-    status: "pending",
+    status: "new",
     equipmentReferenceSnapshot: "PX-CP-NH3-1000",
     equipmentTitleSnapshot: "Complete Ammonia Plant 1000 MTPD - Haldor Topsoe",
     name: "Procurement Lead",
@@ -16,9 +16,9 @@ export const fallbackQuotes: InquirySummary[] = [
     createdAt: "2026-06-21T12:40:07.000Z",
   },
   {
-    documentId: "quote-crane-responded",
+    documentId: "quote-crane-contacted",
     inquiryType: "buyer",
-    status: "responded",
+    status: "contacted",
     equipmentReferenceSnapshot: "PX-CR-18000",
     equipmentTitleSnapshot: "Manitowoc 18000 Ring Crane 2250t",
     name: "Heavy Lift Buyer",
@@ -44,9 +44,9 @@ export const fallbackQuotes: InquirySummary[] = [
     createdAt: "2026-06-19T16:45:00.000Z",
   },
   {
-    documentId: "quote-loader-accepted",
+    documentId: "quote-loader-closed",
     inquiryType: "buyer",
-    status: "accepted",
+    status: "closed",
     equipmentReferenceSnapshot: "PX-LD-WA600",
     equipmentTitleSnapshot: "Komatsu WA600-8 Wheel Loader",
     name: "Mine Operator",

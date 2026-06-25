@@ -14,10 +14,12 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 const statusStyles: Record<QuoteStatus, string> = {
-  pending: "bg-[#2f343b] text-white",
-  responded: "bg-[#287cff] text-white",
+  new: "bg-[#2f343b] text-white",
+  contacted: "bg-[#287cff] text-white",
+  qualified: "bg-[#6f42c1] text-white",
   negotiating: "bg-[#ff3d00] text-white",
-  accepted: "bg-[#0aa34a] text-white",
+  closed: "bg-[#0aa34a] text-white",
+  spam: "bg-[#777a7d] text-white",
 };
 
 function formatDate(value?: string) {
@@ -41,7 +43,7 @@ export default async function QuotesPage() {
               My Quotes
             </h1>
             <p className="mt-4 font-mono text-lg font-black uppercase tracking-[0.16em] text-[#777a7d]">
-              Pending - Responded - Negotiating - Accepted
+              New - Contacted - Qualified - Negotiating - Closed
             </p>
           </div>
           <Link
