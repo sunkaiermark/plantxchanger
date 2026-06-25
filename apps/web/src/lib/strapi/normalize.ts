@@ -217,6 +217,7 @@ export function normalizeInquiry(item: unknown): InquirySummary {
     country: optionalString(entity.country),
     message: stringOrDefault(entity.message, ""),
     sourcePage: optionalString(entity.sourcePage),
+    internalNote: optionalString(entity.internalNote),
     createdAt: optionalString(entity.createdAt),
     updatedAt: optionalString(entity.updatedAt),
   };
