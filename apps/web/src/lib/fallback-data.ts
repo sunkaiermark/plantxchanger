@@ -397,6 +397,9 @@ export const fallbackSiteSettings: SiteSettings = {
   contactEmail: "sales@plantxchanger.com",
   whatsappNumber: "+8613800000000",
   whatsappDisplayLabel: "WhatsApp",
+  homepageHeadline: "The global exchange for used process equipment",
+  homepageIntro:
+    "Source used tanks, reactors, mixers, pumps, compressors, and complete plant assets from serious industrial sellers.",
   defaultSeoTitle: "PlantXchange | Used Industrial Process Equipment",
   defaultSeoDescription:
     "Source used tanks, reactors, mixers, pumps, compressors, and chemical plant assets through PlantXchange.",
