@@ -26,6 +26,10 @@ export function hasPostgresConfig(): boolean {
   return Boolean(getServerEnv("DATABASE_URL"));
 }
 
+export function hasAdminConfig(): boolean {
+  return Boolean(getServerEnv("ADMIN_PASSWORD") && getServerEnv("ADMIN_SESSION_SECRET"));
+}
+
 export function hasInquiryReadConfig(): boolean {
   return hasPostgresConfig() || hasStrapiReadConfig();
 }
