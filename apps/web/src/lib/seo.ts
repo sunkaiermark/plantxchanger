@@ -1,7 +1,8 @@
 import type { Metadata, MetadataRoute } from "next";
-import type { EquipmentSummary } from "@/lib/strapi/types";
+import type { CategorySummary, EquipmentSummary } from "@/lib/strapi/types";
 
-const defaultSiteUrl = "http://127.0.0.1:3000";
+const defaultSiteUrl = "https://www.plantxchanger.com";
+const canonicalSiteUrl = "https://www.plantxchanger.com";
 
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
@@ -12,7 +13,18 @@ function normalizePath(path: string) {
     return "/";
   }
 
-  return `/${path.replace(/^\/+/, "")}`;
+  if (/^https?:\/\//i.test(path)) {
+    const url = new URL(path);
+    return `${url.pathname}${url.search}`;
+  }
+
+  const [pathWithoutHash] = path.split("#", 1);
+  const searchStart = pathWithoutHash.indexOf("?");
+  const pathname = searchStart >= 0 ? pathWithoutHash.slice(0, searchStart) : pathWithoutHash;
+  const search = searchStart >= 0 ? pathWithoutHash.slice(searchStart) : "";
+  const normalizedPathname = pathname ? `/${pathname.replace(/^\/+/, "")}` : "/";
+
+  return `${normalizedPathname}${search}`;
 }
 
 function compactDescription(value?: string) {
@@ -39,9 +51,24 @@ export function getPublicSiteUrl() {
   return trimTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl);
 }
 
-export function canonicalUrl(path = "/") {
+export function getCanonicalUrl(path = "/") {
   const normalizedPath = normalizePath(path);
-  return `${getPublicSiteUrl()}${normalizedPath}`;
+  return `${canonicalSiteUrl}${normalizedPath}`;
+}
+
+export const canonicalUrl = getCanonicalUrl;
+
+function isPrivatePath(pathname: string, segment: string) {
+  return pathname === segment || pathname.startsWith(`${segment}/`);
+}
+
+export function isPublicIndexablePath(path: string) {
+  const pathname = normalizePath(path).split(/[?#]/, 1)[0] ?? "/";
+  return !(
+    isPrivatePath(pathname, "/admin") ||
+    isPrivatePath(pathname, "/api") ||
+    isPrivatePath(pathname, "/quotes")
+  );
 }
 
 export function buildEquipmentMetadata(equipment: EquipmentSummary): Metadata {
@@ -153,7 +180,10 @@ export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]) {
   };
 }
 
-export function buildSitemapEntries(equipment: EquipmentSummary[]): MetadataRoute.Sitemap {
+export function buildSitemapEntries(
+  equipment: EquipmentSummary[],
+  categories: CategorySummary[] = [],
+): MetadataRoute.Sitemap {
   const now = new Date();
   const staticPaths = ["/", "/catalog", "/sell", "/about"];
 
@@ -170,7 +200,13 @@ export function buildSitemapEntries(equipment: EquipmentSummary[]): MetadataRout
       priority: item.isFeatured ? 0.9 : 0.7,
       url: canonicalUrl(`/equipment/${item.slug}`),
     })),
-  ];
+    ...categories.map((category) => ({
+      changeFrequency: "weekly" as const,
+      lastModified: now,
+      priority: 0.6,
+      url: canonicalUrl(`/catalog?category=${category.slug}`),
+    })),
+  ].filter((entry) => isPublicIndexablePath(new URL(entry.url).pathname));
 }
 
 export function buildRobotsPolicy(): MetadataRoute.Robots {
