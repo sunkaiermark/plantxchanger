@@ -1,4 +1,5 @@
 import { requireAdminSession, isAdminUnauthorizedError, unauthorizedAdminResponse } from "@/lib/admin/route-auth";
+import { revalidatePublicCatalog } from "@/lib/admin/revalidate";
 import { adminEquipmentSchema } from "@/lib/admin/validation";
 import { createAdminEquipment, listAdminEquipment } from "@/lib/postgres/catalog";
 import { getPostgresSql } from "@/lib/postgres/client";
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
     if (!parsed.success) return validationError();
 
     const data = await createAdminEquipment(getPostgresSql(), parsed.data);
+    revalidatePublicCatalog();
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();

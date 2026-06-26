@@ -1,4 +1,5 @@
 import { requireAdminSession, isAdminUnauthorizedError, unauthorizedAdminResponse } from "@/lib/admin/route-auth";
+import { revalidatePublicCatalog } from "@/lib/admin/revalidate";
 import { adminSettingsSchema } from "@/lib/admin/validation";
 import { getPostgresSql } from "@/lib/postgres/client";
 import { getSiteSettingsFromPostgres, updateAdminSettings } from "@/lib/postgres/catalog";
@@ -26,6 +27,7 @@ export async function PUT(request: Request) {
     if (!parsed.success) return validationError();
 
     const data = await updateAdminSettings(getPostgresSql(), parsed.data);
+    revalidatePublicCatalog();
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();

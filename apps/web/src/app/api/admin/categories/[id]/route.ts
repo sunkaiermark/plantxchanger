@@ -1,4 +1,5 @@
 import { requireAdminSession, isAdminUnauthorizedError, unauthorizedAdminResponse } from "@/lib/admin/route-auth";
+import { revalidatePublicCatalog } from "@/lib/admin/revalidate";
 import { adminCategorySchema } from "@/lib/admin/validation";
 import { deleteAdminCategory, updateAdminCategory } from "@/lib/postgres/catalog";
 import { getPostgresSql } from "@/lib/postgres/client";
@@ -22,6 +23,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
     const { id } = await context.params;
     const data = await updateAdminCategory(getPostgresSql(), id, parsed.data);
+    revalidatePublicCatalog();
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
@@ -35,6 +37,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await requireAdminSession();
     const { id } = await context.params;
     await deleteAdminCategory(getPostgresSql(), id);
+    revalidatePublicCatalog();
 
     return NextResponse.json({ ok: true, data: { id } });
   } catch (error) {

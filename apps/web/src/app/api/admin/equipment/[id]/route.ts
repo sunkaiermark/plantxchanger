@@ -1,4 +1,5 @@
 import { requireAdminSession, isAdminUnauthorizedError, unauthorizedAdminResponse } from "@/lib/admin/route-auth";
+import { revalidatePublicCatalog } from "@/lib/admin/revalidate";
 import { adminEquipmentSchema } from "@/lib/admin/validation";
 import {
   deleteAdminEquipment,
@@ -39,6 +40,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
     const { id } = await context.params;
     const data = await updateAdminEquipment(getPostgresSql(), id, parsed.data);
+    revalidatePublicCatalog();
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     if (isAdminUnauthorizedError(error)) return unauthorizedAdminResponse();
@@ -52,6 +54,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     await requireAdminSession();
     const { id } = await context.params;
     await deleteAdminEquipment(getPostgresSql(), id);
+    revalidatePublicCatalog();
 
     return NextResponse.json({ ok: true, data: { id } });
   } catch (error) {
