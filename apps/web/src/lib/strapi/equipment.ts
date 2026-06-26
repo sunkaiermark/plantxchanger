@@ -1,6 +1,12 @@
+import { unstable_cache } from "next/cache";
 import { hasPostgresConfig, hasStrapiReadConfig } from "@/lib/env";
 import { fallbackCategories, fallbackEquipment, fallbackSiteSettings } from "@/lib/fallback-data";
 import { getPostgresSql } from "@/lib/postgres/client";
+import {
+  catalogSearchParamsCacheArgs,
+  PUBLIC_CATALOG_CACHE_REVALIDATE_SECONDS,
+  PUBLIC_CATALOG_CACHE_TAG,
+} from "@/lib/catalog-cache";
 import {
   getCatalogEquipmentFromPostgres,
   getCategoriesFromPostgres,
@@ -11,6 +17,11 @@ import {
 import { getStrapiUrl, strapiFetch } from "./client";
 import { normalizeCategory, normalizeEquipment, normalizeSiteSettings } from "./normalize";
 import type { CategorySummary, EquipmentSummary, SiteSettings } from "./types";
+
+const publicCatalogCacheOptions = {
+  revalidate: PUBLIC_CATALOG_CACHE_REVALIDATE_SECONDS,
+  tags: [PUBLIC_CATALOG_CACHE_TAG],
+};
 
 const EQUIPMENT_POPULATE = {
   category: true,
@@ -65,10 +76,53 @@ export async function readPostgresFirst<T>({
   return readFallback();
 }
 
+const readCachedSiteSettingsFromPostgres = unstable_cache(
+  async () => getSiteSettingsFromPostgres(getPostgresSql()),
+  ["postgres-site-settings"],
+  publicCatalogCacheOptions,
+);
+
+const readCachedCategoriesFromPostgres = unstable_cache(
+  async () => getCategoriesFromPostgres(getPostgresSql()),
+  ["postgres-categories"],
+  publicCatalogCacheOptions,
+);
+
+const readCachedFeaturedEquipmentFromPostgres = unstable_cache(
+  async () => getFeaturedEquipmentFromPostgres(getPostgresSql()),
+  ["postgres-featured-equipment"],
+  publicCatalogCacheOptions,
+);
+
+const readCachedEquipmentBySlugFromPostgres = unstable_cache(
+  async (slug: string) => getEquipmentBySlugFromPostgres(getPostgresSql(), slug),
+  ["postgres-equipment-by-slug"],
+  publicCatalogCacheOptions,
+);
+
+const readCachedCatalogEquipmentFromPostgres = unstable_cache(
+  async (
+    search: string,
+    category: string,
+    condition: string,
+    availability: string,
+    country: string,
+  ) =>
+    getCatalogEquipmentFromPostgres(getPostgresSql(), {
+      search,
+      category,
+      condition,
+      availability,
+      country,
+    }),
+  ["postgres-catalog-equipment"],
+  publicCatalogCacheOptions,
+);
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   return readPostgresFirst({
     hasPostgres: hasPostgresConfig(),
-    readPostgres: () => getSiteSettingsFromPostgres(getPostgresSql()),
+    readPostgres: () => readCachedSiteSettingsFromPostgres(),
     readFallback: async () => {
       if (!hasStrapiReadConfig()) {
         return fallbackSiteSettings;
@@ -89,7 +143,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 export async function getCategories(): Promise<CategorySummary[]> {
   return readPostgresFirst({
     hasPostgres: hasPostgresConfig(),
-    readPostgres: () => getCategoriesFromPostgres(getPostgresSql()),
+    readPostgres: () => readCachedCategoriesFromPostgres(),
     readFallback: async () => {
       if (!hasStrapiReadConfig()) {
         return fallbackCategories;
@@ -114,7 +168,7 @@ export async function getCategories(): Promise<CategorySummary[]> {
 export async function getFeaturedEquipment(): Promise<EquipmentSummary[]> {
   return readPostgresFirst({
     hasPostgres: hasPostgresConfig(),
-    readPostgres: () => getFeaturedEquipmentFromPostgres(getPostgresSql()),
+    readPostgres: () => readCachedFeaturedEquipmentFromPostgres(),
     readFallback: async () => {
       if (!hasStrapiReadConfig()) {
         return fallbackEquipment.filter((equipment) => equipment.isFeatured);
@@ -141,7 +195,7 @@ export async function getFeaturedEquipment(): Promise<EquipmentSummary[]> {
 export async function getEquipmentBySlug(slug: string): Promise<EquipmentSummary | null> {
   return readPostgresFirst({
     hasPostgres: hasPostgresConfig(),
-    readPostgres: () => getEquipmentBySlugFromPostgres(getPostgresSql(), slug),
+    readPostgres: () => readCachedEquipmentBySlugFromPostgres(slug),
     readFallback: async () => {
       if (!hasStrapiReadConfig()) {
         return fallbackEquipment.find((equipment) => equipment.slug === slug) ?? null;
@@ -171,9 +225,13 @@ export async function getCatalogEquipment(searchParams: {
   availability?: string;
   country?: string;
 }): Promise<EquipmentSummary[]> {
+  const [search, category, condition, availability, country] =
+    catalogSearchParamsCacheArgs(searchParams);
+
   return readPostgresFirst({
     hasPostgres: hasPostgresConfig(),
-    readPostgres: () => getCatalogEquipmentFromPostgres(getPostgresSql(), searchParams),
+    readPostgres: () =>
+      readCachedCatalogEquipmentFromPostgres(search, category, condition, availability, country),
     readFallback: async () => {
       if (!hasStrapiReadConfig()) {
         return filterFallbackEquipment(searchParams);
