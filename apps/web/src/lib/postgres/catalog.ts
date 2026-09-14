@@ -1,4 +1,5 @@
 import type { AdminCategoryInput, AdminEquipmentInput, AdminSettingsInput } from "@/lib/admin/validation";
+import { canonicalizeBrandText, canonicalizeOptionalBrandText } from "@/lib/brand";
 import type { CatalogSearchParams } from "@/lib/catalog/types";
 import { fallbackCategories, fallbackEquipment, fallbackSiteSettings } from "@/lib/fallback-data";
 import type {
@@ -87,17 +88,29 @@ function queryText(sql: SqlExecutor, text: string, values: unknown[] = []) {
 function mapSiteSettingsRow(row: Row | undefined): SiteSettings {
   return {
     ...fallbackSiteSettings,
-    siteName: optionalString(row?.site_name) ?? fallbackSiteSettings.siteName,
+    siteName: canonicalizeBrandText(
+      optionalString(row?.site_name) ?? fallbackSiteSettings.siteName,
+    ),
     contactEmail: optionalString(row?.contact_email) ?? fallbackSiteSettings.contactEmail,
     whatsappNumber: optionalString(row?.whatsapp_number) ?? fallbackSiteSettings.whatsappNumber,
     whatsappDisplayLabel:
       optionalString(row?.whatsapp_display_label) ?? fallbackSiteSettings.whatsappDisplayLabel,
-    homepageHeadline: optionalString(row?.homepage_headline) ?? fallbackSiteSettings.homepageHeadline,
-    homepageIntro: optionalString(row?.homepage_intro) ?? fallbackSiteSettings.homepageIntro,
-    defaultSeoTitle: optionalString(row?.default_seo_title) ?? fallbackSiteSettings.defaultSeoTitle,
+    homepageHeadline: canonicalizeOptionalBrandText(
+      optionalString(row?.homepage_headline) ?? fallbackSiteSettings.homepageHeadline,
+    ),
+    homepageIntro: canonicalizeOptionalBrandText(
+      optionalString(row?.homepage_intro) ?? fallbackSiteSettings.homepageIntro,
+    ),
+    defaultSeoTitle: canonicalizeOptionalBrandText(
+      optionalString(row?.default_seo_title) ?? fallbackSiteSettings.defaultSeoTitle,
+    ),
     defaultSeoDescription:
-      optionalString(row?.default_seo_description) ?? fallbackSiteSettings.defaultSeoDescription,
-    footerSummary: optionalString(row?.footer_summary) ?? fallbackSiteSettings.footerSummary,
+      canonicalizeOptionalBrandText(
+        optionalString(row?.default_seo_description) ?? fallbackSiteSettings.defaultSeoDescription,
+      ),
+    footerSummary: canonicalizeOptionalBrandText(
+      optionalString(row?.footer_summary) ?? fallbackSiteSettings.footerSummary,
+    ),
   };
 }
 

@@ -35,7 +35,7 @@ export function AdminLoginForm() {
     <main className="admin-login">
       <form className="admin-login-form" onSubmit={submit}>
         <div>
-          <p className="admin-eyebrow">PlantXchange CMS</p>
+          <p className="admin-eyebrow">PlantXchanger CMS</p>
           <h1>Admin login</h1>
         </div>
         <label>

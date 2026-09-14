@@ -8,7 +8,7 @@ import type { EquipmentSummary } from "@/lib/strapi/types";
 export const metadata = {
   title: "Used Industrial Process Equipment Marketplace",
   description:
-    "Browse used industrial equipment, process plants, reactors, tanks, mixers, pumps, compressors, cranes, and chemical plant assets. Request quotes from PlantXchange.",
+    "Browse used industrial equipment, process plants, reactors, tanks, mixers, pumps, compressors, cranes, and chemical plant assets. Request quotes from PlantXchanger.",
   alternates: {
     canonical: canonicalUrl("/"),
   },
@@ -238,7 +238,7 @@ export default async function Home() {
               Catalog and lead database now, backend workflow later
             </h2>
             <p className="mt-5 max-w-2xl font-mono text-base leading-7 text-[#5d6268]">
-              PlantXchange keeps equipment content in Strapi and stores every inquiry in the
+              PlantXchanger keeps equipment content in Strapi and stores every inquiry in the
               database. Email and WhatsApp stay visible on every asset page while the business
               workflow is proven.
             </p>

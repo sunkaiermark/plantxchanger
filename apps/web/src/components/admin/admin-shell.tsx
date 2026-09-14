@@ -26,7 +26,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <Link className="admin-brand" href="/admin">
-          <span>PlantXchange</span>
+          <span>PlantXchanger</span>
           <small>CMS</small>
         </Link>
         <nav aria-label="Admin">

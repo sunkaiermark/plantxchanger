@@ -393,16 +393,16 @@ export const fallbackEquipment: EquipmentSummary[] = [
 ];
 
 export const fallbackSiteSettings: SiteSettings = {
-  siteName: "PlantXchange",
+  siteName: "PlantXchanger",
   contactEmail: "sales@plantxchanger.com",
   whatsappNumber: "+8613800000000",
   whatsappDisplayLabel: "WhatsApp",
   homepageHeadline: "The global exchange for used process equipment",
   homepageIntro:
     "Source used tanks, reactors, mixers, pumps, compressors, and complete plant assets from serious industrial sellers.",
-  defaultSeoTitle: "PlantXchange | Used Industrial Process Equipment",
+  defaultSeoTitle: "PlantXchanger | Used Industrial Process Equipment",
   defaultSeoDescription:
-    "Source used tanks, reactors, mixers, pumps, compressors, and chemical plant assets through PlantXchange.",
+    "Source used tanks, reactors, mixers, pumps, compressors, and chemical plant assets through PlantXchanger.",
   footerSummary:
     "The global B2B marketplace for buying and selling second-hand industrial equipment. Connecting serious buyers and sellers worldwide with confidence and transparency.",
 };

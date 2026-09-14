@@ -1,4 +1,5 @@
 import type { Metadata, MetadataRoute } from "next";
+import { SITE_BRAND_NAME } from "@/lib/brand";
 import type { CategorySummary, EquipmentSummary } from "@/lib/strapi/types";
 
 const defaultSiteUrl = "https://www.plantxchanger.com";
@@ -76,7 +77,7 @@ export function buildEquipmentMetadata(equipment: EquipmentSummary): Metadata {
   const location = equipment.country ?? equipment.location ?? "global seller";
   const description =
     compactDescription(equipment.seoDescription) ??
-    `${equipment.title} (${equipment.reference}) ${categoryLabel.toLowerCase()} available from ${location}. Request quote, inspection details, technical specifications, and export support through PlantXchange.`;
+    `${equipment.title} (${equipment.reference}) ${categoryLabel.toLowerCase()} available from ${location}. Request quote, inspection details, technical specifications, and export support through ${SITE_BRAND_NAME}.`;
   const title = equipment.seoTitle ?? `${equipment.title} | ${categoryLabel}`;
   const image = absoluteAssetUrl(equipment.mainImage?.url);
   const url = canonicalUrl(`/equipment/${equipment.slug}`);
@@ -109,7 +110,7 @@ export function buildEquipmentJsonLd(equipment: EquipmentSummary) {
     priceCurrency: equipment.currency,
     seller: {
       "@type": "Organization",
-      name: equipment.sellerDisplayName ?? "PlantXchange verified seller",
+      name: equipment.sellerDisplayName ?? `${SITE_BRAND_NAME} verified seller`,
     },
     url,
   };
@@ -128,7 +129,7 @@ export function buildEquipmentJsonLd(equipment: EquipmentSummary) {
     })),
     brand: {
       "@type": "Brand",
-      name: equipment.make ?? equipment.sellerDisplayName ?? "PlantXchange",
+      name: equipment.make ?? equipment.sellerDisplayName ?? SITE_BRAND_NAME,
     },
     category: equipment.category?.name,
     condition: "https://schema.org/UsedCondition",
@@ -146,7 +147,7 @@ export function buildOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "PlantXchange",
+    name: SITE_BRAND_NAME,
     url: canonicalUrl("/"),
     description:
       "B2B marketplace for used industrial process equipment, chemical plant assets, tanks, reactors, mixers, pumps, and compressors.",
@@ -157,7 +158,7 @@ export function buildWebsiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "PlantXchange",
+    name: SITE_BRAND_NAME,
     potentialAction: {
       "@type": "SearchAction",
       queryInput: "required name=search_term_string",

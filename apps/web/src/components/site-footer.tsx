@@ -55,7 +55,7 @@ export function SiteFooter({
           </div>
         </div>
         <div className="mt-12 flex flex-col justify-between gap-4 border-t border-white/8 pt-8 font-mono text-sm font-black uppercase tracking-[0.12em] text-white/38 md:flex-row">
-          <span>© 2026 PlantXchange. All rights reserved.</span>
+          <span>© 2026 PlantXchanger. All rights reserved.</span>
           <span>Global reach. Industrial strength. Proven reliability.</span>
         </div>
       </div>

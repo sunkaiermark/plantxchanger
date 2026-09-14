@@ -8,7 +8,7 @@ import { getRequiredServerEnv } from "@/lib/env";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "PlantXchange Admin",
+  title: "PlantXchanger Admin",
   robots: { index: false, follow: false },
 };
 

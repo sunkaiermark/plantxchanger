@@ -6,7 +6,7 @@ import { getSiteSettings } from "@/lib/strapi/equipment";
 export const metadata = {
   title: "Sell Equipment",
   description:
-    "Submit used process equipment, chemical plant assets, reactors, tanks, mixers, pumps, compressors, and heavy equipment for review by PlantXchange.",
+    "Submit used process equipment, chemical plant assets, reactors, tanks, mixers, pumps, compressors, and heavy equipment for review by PlantXchanger.",
   alternates: {
     canonical: canonicalUrl("/sell"),
   },
@@ -26,7 +26,7 @@ export default async function SellPage() {
             Sell used plant equipment
           </h1>
           <p className="mt-6 max-w-xl font-mono text-lg leading-8 text-[#5d6268]">
-            Post a listing for review. PlantXchange stores seller submissions in the inquiry
+            Post a listing for review. PlantXchanger stores seller submissions in the inquiry
             database first, then publishes qualified equipment into the catalog.
           </p>
 

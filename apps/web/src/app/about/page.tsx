@@ -4,7 +4,7 @@ import { canonicalUrl } from "@/lib/seo";
 export const metadata = {
   title: "About",
   description:
-    "Learn how PlantXchange connects buyers and sellers of used industrial process equipment, chemical plant assets, oil and gas equipment, and heavy industry machinery.",
+    "Learn how PlantXchanger connects buyers and sellers of used industrial process equipment, chemical plant assets, oil and gas equipment, and heavy industry machinery.",
   alternates: {
     canonical: canonicalUrl("/about"),
   },
@@ -16,13 +16,13 @@ export default function AboutPage() {
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:px-10">
         <div className="max-w-4xl">
           <p className="font-mono text-sm font-black uppercase tracking-[0.18em] text-[#ff3d00]">
-            About PlantXchange
+            About PlantXchanger
           </p>
           <h1 className="mt-4 text-[clamp(2.8rem,5vw,4.8rem)] font-black uppercase leading-none tracking-normal text-[#202329]">
             Global reach for used industrial equipment
           </h1>
           <p className="mt-6 max-w-3xl font-mono text-lg leading-8 text-[#5d6268]">
-            PlantXchange connects serious buyers and sellers across process plants, oil and gas,
+            PlantXchanger connects serious buyers and sellers across process plants, oil and gas,
             petrochemical, construction, and heavy industry. The first version focuses on catalog
             visibility, quote capture, and quote negotiation status tracking.
           </p>

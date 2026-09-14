@@ -8,11 +8,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(getPublicSiteUrl()),
   title: {
-    default: "PlantXchange | Used Industrial Process Equipment",
-    template: "%s | PlantXchange",
+    default: "PlantXchanger | Used Industrial Process Equipment",
+    template: "%s | PlantXchanger",
   },
   description:
-    "Source used tanks, reactors, mixers, pumps, compressors, and chemical plant assets through PlantXchange.",
+    "Source used tanks, reactors, mixers, pumps, compressors, and chemical plant assets through PlantXchanger.",
   keywords: [
     "used industrial equipment",
     "used process equipment",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "second hand plant equipment",
   ],
   openGraph: {
-    title: "PlantXchange",
+    title: "PlantXchanger",
     description: "Used industrial process equipment catalog and inquiry platform.",
     images: ["/opengraph.jpg"],
   },

@@ -9,6 +9,7 @@ import type {
   QuoteStatus,
   SiteSettings,
 } from "./types";
+import { canonicalizeBrandText, canonicalizeOptionalBrandText } from "@/lib/brand";
 
 type StrapiRecord = Record<string, unknown>;
 
@@ -227,12 +228,14 @@ export function normalizeSiteSettings(item: unknown): SiteSettings {
   const entity = unwrapEntity(item);
 
   return {
-    siteName: stringOrDefault(entity.siteName, "PlantXchange"),
+    siteName: canonicalizeBrandText(stringOrDefault(entity.siteName, "PlantXchanger")),
     contactEmail: stringOrDefault(entity.contactEmail, "sales@plantxchanger.com"),
     whatsappNumber: stringOrDefault(entity.whatsappNumber, "+8613800000000"),
     whatsappDisplayLabel: stringOrDefault(entity.whatsappDisplayLabel, "WhatsApp"),
-    defaultSeoTitle: optionalString(entity.defaultSeoTitle),
-    defaultSeoDescription: optionalString(entity.defaultSeoDescription),
-    footerSummary: optionalString(entity.footerSummary),
+    defaultSeoTitle: canonicalizeOptionalBrandText(optionalString(entity.defaultSeoTitle)),
+    defaultSeoDescription: canonicalizeOptionalBrandText(
+      optionalString(entity.defaultSeoDescription),
+    ),
+    footerSummary: canonicalizeOptionalBrandText(optionalString(entity.footerSummary)),
   };
 }

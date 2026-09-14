@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 
 export const metadata: Metadata = {
-  title: "Admin Login | PlantXchange",
+  title: "Admin Login | PlantXchanger",
   robots: { index: false, follow: false },
 };
 
