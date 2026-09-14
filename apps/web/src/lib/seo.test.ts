@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test, { afterEach } from "node:test";
-import { fallbackCategories, fallbackEquipment } from "./fallback-data";
+import { fallbackCategories, fallbackEquipment, fallbackSiteSettings } from "./fallback-data";
 import { readPostgresFirst } from "./strapi/equipment";
 import {
   buildRobotsPolicy,
+  buildOrganizationJsonLd,
   buildEquipmentJsonLd,
   buildEquipmentMetadata,
   buildSitemapEntries,
@@ -136,6 +137,15 @@ test("buildEquipmentJsonLd returns Product schema with offer and seller context"
   assert.equal(jsonLd.brand.name, equipment.make);
   assert.equal(jsonLd.offers.url, `https://www.plantxchanger.com/equipment/${equipment.slug}`);
   assert.equal(jsonLd.offers.priceCurrency, "USD");
+});
+
+test("buildOrganizationJsonLd publishes the approved telephone contact", () => {
+  const jsonLd = buildOrganizationJsonLd(fallbackSiteSettings);
+
+  assert.equal(jsonLd.name, "PlantXchanger");
+  assert.equal(jsonLd.email, "sales@plantxchanger.com");
+  assert.equal(jsonLd.telephone, "+852 9616 6083");
+  assert.equal(jsonLd.contactPoint.telephone, "+852 9616 6083");
 });
 
 test("buildSitemapEntries includes only public static, equipment, and category URLs", () => {

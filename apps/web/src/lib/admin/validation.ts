@@ -154,6 +154,7 @@ export const adminSettingsSchema = z
   .object({
     siteName: requiredString(120),
     contactEmail: z.string().trim().email().max(180),
+    phoneNumber: requiredString(80),
     whatsappNumber: requiredString(80),
     whatsappDisplayLabel: requiredString(80),
     homepageHeadline: optionalString(180),

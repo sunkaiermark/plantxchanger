@@ -10,6 +10,7 @@ import type {
   SiteSettings,
 } from "./types";
 import { canonicalizeBrandText, canonicalizeOptionalBrandText } from "@/lib/brand";
+import { resolvePhoneNumber, resolveWhatsAppNumber } from "@/lib/site-contact";
 
 type StrapiRecord = Record<string, unknown>;
 
@@ -230,7 +231,8 @@ export function normalizeSiteSettings(item: unknown): SiteSettings {
   return {
     siteName: canonicalizeBrandText(stringOrDefault(entity.siteName, "PlantXchanger")),
     contactEmail: stringOrDefault(entity.contactEmail, "sales@plantxchanger.com"),
-    whatsappNumber: stringOrDefault(entity.whatsappNumber, "+8613800000000"),
+    phoneNumber: resolvePhoneNumber(entity.phoneNumber),
+    whatsappNumber: resolveWhatsAppNumber(entity.whatsappNumber),
     whatsappDisplayLabel: stringOrDefault(entity.whatsappDisplayLabel, "WhatsApp"),
     defaultSeoTitle: canonicalizeOptionalBrandText(optionalString(entity.defaultSeoTitle)),
     defaultSeoDescription: canonicalizeOptionalBrandText(

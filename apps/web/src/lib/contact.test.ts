@@ -18,7 +18,7 @@ test("buildEquipmentEmailHref includes equipment reference and title", () => {
 });
 
 test("buildEquipmentWhatsAppHref strips non-digits from phone number", () => {
-  const href = buildEquipmentWhatsAppHref(equipment, "+86 138 0000 0000");
-  assert.ok(href.startsWith("https://wa.me/8613800000000?text="));
+  const href = buildEquipmentWhatsAppHref(equipment, "+852 96166083");
+  assert.ok(href.startsWith("https://wa.me/85296166083?text="));
   assert.match(decodeURIComponent(href), /PX-R-001/);
 });

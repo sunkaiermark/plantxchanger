@@ -40,7 +40,7 @@ function createFakeSql(responses: Array<Record<string, unknown>[]>) {
   return { calls, sql };
 }
 
-const schemaResponses = () => Array.from({ length: 6 }, () => []);
+const schemaResponses = () => Array.from({ length: 7 }, () => []);
 
 const adminEquipmentInput: AdminEquipmentInput = {
   title: "Complete Ammonia Plant",
@@ -86,6 +86,7 @@ const adminCategoryInput: AdminCategoryInput = {
 const adminSettingsInput: AdminSettingsInput = {
   siteName: "PlantXchanger",
   contactEmail: "sales@example.com",
+  phoneNumber: "+852 9616 6083",
   whatsappNumber: "+15550100",
   whatsappDisplayLabel: "Message us",
   homepageHeadline: "Used process equipment",
@@ -139,6 +140,7 @@ const categoryRow = {
 const settingsRow = {
   site_name: "PlantXchanger",
   contact_email: "sales@example.com",
+  phone_number: "+852 9616 6083",
   whatsapp_number: "+15550100",
   whatsapp_display_label: "Message us",
   homepage_headline: "Used process equipment",
@@ -280,7 +282,7 @@ test("getSiteSettingsFromPostgres maps stored global settings with fallback defa
       {
         site_name: "PlantXchange DB",
         contact_email: "sales@example.com",
-        whatsapp_number: "+15550100",
+        whatsapp_number: "+86 138 0000 0000",
         whatsapp_display_label: "Message us",
         homepage_headline: "Used process equipment",
         homepage_intro: "Find serious sellers.",
@@ -294,6 +296,8 @@ test("getSiteSettingsFromPostgres maps stored global settings with fallback defa
   const settings = await getSiteSettingsFromPostgres(fake.sql);
 
   assert.equal(settings.siteName, "PlantXchanger DB");
+  assert.equal(settings.phoneNumber, "+852 9616 6083");
+  assert.equal(settings.whatsappNumber, "+852 96166083");
   assert.equal(settings.homepageHeadline, "Used process equipment");
   assert.equal(settings.homepageIntro, "Find serious sellers.");
 });
@@ -463,6 +467,7 @@ test("updateAdminSettings upserts global settings", async () => {
 
   assert.equal(settings.siteName, "PlantXchanger");
   assert.match(fake.calls.at(-1)?.text ?? "", /INSERT INTO site_settings/);
+  assert.match(fake.calls.at(-1)?.text ?? "", /phone_number/);
   assert.match(fake.calls.at(-1)?.text ?? "", /ON CONFLICT \(id\) DO UPDATE/);
 });
 

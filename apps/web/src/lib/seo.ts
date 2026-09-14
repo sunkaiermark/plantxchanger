@@ -1,6 +1,6 @@
 import type { Metadata, MetadataRoute } from "next";
 import { SITE_BRAND_NAME } from "@/lib/brand";
-import type { CategorySummary, EquipmentSummary } from "@/lib/strapi/types";
+import type { CategorySummary, EquipmentSummary, SiteSettings } from "@/lib/strapi/types";
 
 const defaultSiteUrl = "https://www.plantxchanger.com";
 const canonicalSiteUrl = "https://www.plantxchanger.com";
@@ -143,12 +143,22 @@ export function buildEquipmentJsonLd(equipment: EquipmentSummary) {
   };
 }
 
-export function buildOrganizationJsonLd() {
+export function buildOrganizationJsonLd(
+  settings: Pick<SiteSettings, "contactEmail" | "phoneNumber">,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_BRAND_NAME,
     url: canonicalUrl("/"),
+    email: settings.contactEmail,
+    telephone: settings.phoneNumber,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "sales",
+      email: settings.contactEmail,
+      telephone: settings.phoneNumber,
+    },
     description:
       "B2B marketplace for used industrial process equipment, chemical plant assets, tanks, reactors, mixers, pumps, and compressors.",
   };

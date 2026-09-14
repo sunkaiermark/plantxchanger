@@ -84,6 +84,7 @@ export interface InquirySummary {
 export interface SiteSettings {
   siteName: string;
   contactEmail: string;
+  phoneNumber: string;
   whatsappNumber: string;
   whatsappDisplayLabel: string;
   homepageHeadline?: string;

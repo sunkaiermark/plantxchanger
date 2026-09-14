@@ -2,6 +2,7 @@ import type { AdminCategoryInput, AdminEquipmentInput, AdminSettingsInput } from
 import { canonicalizeBrandText, canonicalizeOptionalBrandText } from "@/lib/brand";
 import type { CatalogSearchParams } from "@/lib/catalog/types";
 import { fallbackCategories, fallbackEquipment, fallbackSiteSettings } from "@/lib/fallback-data";
+import { resolvePhoneNumber, resolveWhatsAppNumber } from "@/lib/site-contact";
 import type {
   CategorySummary,
   EquipmentAvailability,
@@ -92,7 +93,8 @@ function mapSiteSettingsRow(row: Row | undefined): SiteSettings {
       optionalString(row?.site_name) ?? fallbackSiteSettings.siteName,
     ),
     contactEmail: optionalString(row?.contact_email) ?? fallbackSiteSettings.contactEmail,
-    whatsappNumber: optionalString(row?.whatsapp_number) ?? fallbackSiteSettings.whatsappNumber,
+    phoneNumber: resolvePhoneNumber(row?.phone_number),
+    whatsappNumber: resolveWhatsAppNumber(row?.whatsapp_number),
     whatsappDisplayLabel:
       optionalString(row?.whatsapp_display_label) ?? fallbackSiteSettings.whatsappDisplayLabel,
     homepageHeadline: canonicalizeOptionalBrandText(
@@ -241,6 +243,7 @@ export async function ensureCatalogSchema(sql: SqlExecutor): Promise<void> {
       id TEXT PRIMARY KEY,
       site_name TEXT,
       contact_email TEXT,
+      phone_number TEXT,
       whatsapp_number TEXT,
       whatsapp_display_label TEXT,
       default_seo_title TEXT,
@@ -251,6 +254,7 @@ export async function ensureCatalogSchema(sql: SqlExecutor): Promise<void> {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+  await sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phone_number TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS equipment_published_updated_at_idx ON equipment (is_published, updated_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS equipment_category_id_idx ON equipment (category_id)`;
 
@@ -596,6 +600,7 @@ export async function updateAdminSettings(
       id,
       site_name,
       contact_email,
+      phone_number,
       whatsapp_number,
       whatsapp_display_label,
       default_seo_title,
@@ -609,6 +614,7 @@ export async function updateAdminSettings(
       'global',
       ${input.siteName},
       ${input.contactEmail},
+      ${input.phoneNumber},
       ${input.whatsappNumber},
       ${input.whatsappDisplayLabel},
       ${input.defaultSeoTitle ?? null},
@@ -621,6 +627,7 @@ export async function updateAdminSettings(
     ON CONFLICT (id) DO UPDATE SET
       site_name = EXCLUDED.site_name,
       contact_email = EXCLUDED.contact_email,
+      phone_number = EXCLUDED.phone_number,
       whatsapp_number = EXCLUDED.whatsapp_number,
       whatsapp_display_label = EXCLUDED.whatsapp_display_label,
       default_seo_title = EXCLUDED.default_seo_title,
@@ -742,6 +749,7 @@ export async function seedFallbackCatalog(
   await updateAdminSettings(sql, {
     siteName: fallbackSiteSettings.siteName,
     contactEmail: fallbackSiteSettings.contactEmail,
+    phoneNumber: fallbackSiteSettings.phoneNumber,
     whatsappNumber: fallbackSiteSettings.whatsappNumber,
     whatsappDisplayLabel: fallbackSiteSettings.whatsappDisplayLabel,
     homepageHeadline: fallbackSiteSettings.homepageHeadline,

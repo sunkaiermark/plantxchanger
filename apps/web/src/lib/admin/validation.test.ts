@@ -313,7 +313,8 @@ test("adminSettingsSchema accepts homepage headline and intro settings", () => {
   const result = adminSettingsSchema.safeParse({
     siteName: "PlantXchanger",
     contactEmail: "sales@plantxchange.com",
-    whatsappNumber: "+86 138 0000 0000",
+    phoneNumber: "+852 9616 6083",
+    whatsappNumber: "+852 96166083",
     whatsappDisplayLabel: "WhatsApp",
     homepageHeadline: "Buy and sell complete process plants",
     homepageIntro: "I".repeat(500),
