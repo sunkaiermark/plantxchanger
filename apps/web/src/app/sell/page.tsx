@@ -1,6 +1,7 @@
-import { Database, Mail, MessageCircle, ShieldCheck } from "lucide-react";
+import { Database, Mail, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { SellEquipmentForm } from "@/components/sell-equipment-form";
 import { canonicalUrl } from "@/lib/seo";
+import { buildTelephoneHref, buildWhatsAppHref } from "@/lib/site-contact";
 import { getSiteSettings } from "@/lib/strapi/equipment";
 
 export const metadata = {
@@ -58,10 +59,17 @@ export default async function SellPage() {
             </a>
             <a
               className="inline-flex items-center gap-2 hover:text-[#ff3d00]"
-              href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`}
+              href={buildTelephoneHref(settings.phoneNumber)}
+            >
+              <Phone size={16} />
+              Tel: {settings.phoneNumber}
+            </a>
+            <a
+              className="inline-flex items-center gap-2 hover:text-[#ff3d00]"
+              href={buildWhatsAppHref(settings.whatsappNumber)}
             >
               <MessageCircle size={16} />
-              {settings.whatsappDisplayLabel}
+              {settings.whatsappDisplayLabel}: {settings.whatsappNumber}
             </a>
           </div>
         </div>

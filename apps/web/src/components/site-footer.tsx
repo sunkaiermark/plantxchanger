@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
+import { buildTelephoneHref, buildWhatsAppHref } from "@/lib/site-contact";
 import type { CategorySummary, SiteSettings } from "@/lib/strapi/types";
 
 export function SiteFooter({
@@ -46,10 +47,17 @@ export function SiteFooter({
               </a>
               <a
                 className="inline-flex items-center gap-2 hover:text-[#ff6a2a]"
-                href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`}
+                href={buildTelephoneHref(settings.phoneNumber)}
+              >
+                <Phone size={16} />
+                Tel: {settings.phoneNumber}
+              </a>
+              <a
+                className="inline-flex items-center gap-2 hover:text-[#ff6a2a]"
+                href={buildWhatsAppHref(settings.whatsappNumber)}
               >
                 <MessageCircle size={16} />
-                WhatsApp
+                {settings.whatsappDisplayLabel}: {settings.whatsappNumber}
               </a>
             </div>
           </div>

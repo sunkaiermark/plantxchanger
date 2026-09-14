@@ -1,3 +1,5 @@
+import { DEFAULT_PHONE_NUMBER, DEFAULT_WHATSAPP_NUMBER } from "./site-contact";
+
 const missingValues = new Set(["", "replace-with-read-token", "replace-with-write-token"]);
 
 export function getServerEnv(name: string): string | undefined {
@@ -43,5 +45,9 @@ export function getFallbackContactEmail(): string {
 }
 
 export function getFallbackWhatsAppNumber(): string {
-  return process.env.NEXT_PUBLIC_FALLBACK_WHATSAPP_NUMBER ?? "+8613800000000";
+  return process.env.NEXT_PUBLIC_FALLBACK_WHATSAPP_NUMBER ?? DEFAULT_WHATSAPP_NUMBER;
+}
+
+export function getFallbackPhoneNumber(): string {
+  return process.env.NEXT_PUBLIC_FALLBACK_PHONE_NUMBER ?? DEFAULT_PHONE_NUMBER;
 }

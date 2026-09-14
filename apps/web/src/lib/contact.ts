@@ -1,3 +1,5 @@
+import { buildWhatsAppHref } from "./site-contact";
+
 interface EquipmentContactContext {
   reference: string;
   title: string;
@@ -30,7 +32,6 @@ export function buildEquipmentWhatsAppHref(
   equipment: EquipmentContactContext,
   whatsappNumber: string,
 ): string {
-  const phone = whatsappNumber.replace(/\D/g, "");
   const text = buildEquipmentMessage(equipment);
-  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  return `${buildWhatsAppHref(whatsappNumber)}?text=${encodeURIComponent(text)}`;
 }

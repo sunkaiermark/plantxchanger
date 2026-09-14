@@ -64,12 +64,15 @@ test("normalizeEquipment supports Strapi attributes responses", () => {
 test("normalizeSiteSettings canonicalizes persisted legacy branding", () => {
   const result = normalizeSiteSettings({
     siteName: "Plant Xchange",
+    whatsappNumber: "+86 138 0000 0000",
     defaultSeoTitle: "PlantXchange marketplace",
     defaultSeoDescription: "Source equipment through Plantxchange.",
     footerSummary: "About PlantXchange",
   });
 
   assert.equal(result.siteName, "PlantXchanger");
+  assert.equal(result.phoneNumber, "+852 9616 6083");
+  assert.equal(result.whatsappNumber, "+852 96166083");
   assert.equal(result.defaultSeoTitle, "PlantXchanger marketplace");
   assert.equal(result.defaultSeoDescription, "Source equipment through PlantXchanger.");
   assert.equal(result.footerSummary, "About PlantXchanger");

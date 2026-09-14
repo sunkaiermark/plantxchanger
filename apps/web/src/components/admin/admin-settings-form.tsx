@@ -24,6 +24,7 @@ export function AdminSettingsForm({ settings }: AdminSettingsFormProps) {
     const payload: AdminSettingsInput = {
       siteName: String(form.get("siteName") ?? ""),
       contactEmail: String(form.get("contactEmail") ?? ""),
+      phoneNumber: String(form.get("phoneNumber") ?? ""),
       whatsappNumber: String(form.get("whatsappNumber") ?? ""),
       whatsappDisplayLabel: String(form.get("whatsappDisplayLabel") ?? ""),
       homepageHeadline: optionalString(form.get("homepageHeadline")),
@@ -60,6 +61,10 @@ export function AdminSettingsForm({ settings }: AdminSettingsFormProps) {
         <label>
           Contact email
           <input name="contactEmail" type="email" defaultValue={settings.contactEmail} required maxLength={180} />
+        </label>
+        <label>
+          Telephone number
+          <input name="phoneNumber" type="tel" defaultValue={settings.phoneNumber} required maxLength={80} />
         </label>
         <label>
           WhatsApp number

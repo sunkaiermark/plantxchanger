@@ -19,8 +19,14 @@
       "type": "email",
       "required": true
     },
+    "phoneNumber": {
+      "type": "string",
+      "default": "+852 9616 6083",
+      "required": true
+    },
     "whatsappNumber": {
       "type": "string",
+      "default": "+852 96166083",
       "required": true
     },
     "whatsappDisplayLabel": {

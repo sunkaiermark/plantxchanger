@@ -1,5 +1,6 @@
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 import { buildEquipmentEmailHref, buildEquipmentWhatsAppHref } from "@/lib/contact";
+import { buildTelephoneHref } from "@/lib/site-contact";
 import type { EquipmentSummary, SiteSettings } from "@/lib/strapi/types";
 
 export function InquiryActions({
@@ -19,11 +20,18 @@ export function InquiryActions({
         Email inquiry
       </a>
       <a
+        href={buildTelephoneHref(settings.phoneNumber)}
+        className="inline-flex h-12 items-center justify-center gap-2 border border-[#dedede] bg-white px-5 font-mono text-sm font-black uppercase tracking-[0.08em] text-[#202329] transition hover:border-[#ff3d00] hover:text-[#ff3d00]"
+      >
+        <Phone size={18} />
+        Call {settings.phoneNumber}
+      </a>
+      <a
         href={buildEquipmentWhatsAppHref(equipment, settings.whatsappNumber)}
         className="inline-flex h-12 items-center justify-center gap-2 border border-[#dedede] bg-white px-5 font-mono text-sm font-black uppercase tracking-[0.08em] text-[#202329] transition hover:border-[#ff3d00] hover:text-[#ff3d00]"
       >
         <MessageCircle size={18} />
-        WhatsApp
+        {settings.whatsappDisplayLabel} {settings.whatsappNumber}
       </a>
     </div>
   );

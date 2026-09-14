@@ -315,7 +315,8 @@ export default {
         data: {
           siteName: "PlantXchanger",
           contactEmail: "sales@plantxchanger.com",
-          whatsappNumber: "+8613800000000",
+          phoneNumber: "+852 9616 6083",
+          whatsappNumber: "+852 96166083",
           whatsappDisplayLabel: "WhatsApp",
           defaultSeoTitle: "PlantXchanger | Used Industrial Process Equipment",
           defaultSeoDescription:

@@ -37,7 +37,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const [settings, categories] = await Promise.all([getSiteSettings(), getCategories()]);
-  const jsonLd = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
+  const jsonLd = [buildOrganizationJsonLd(settings), buildWebsiteJsonLd()];
 
   return (
     <html lang="en">

@@ -1,4 +1,5 @@
 import type { CategorySummary, EquipmentSummary, SiteSettings } from "./strapi/types";
+import { DEFAULT_PHONE_NUMBER, DEFAULT_WHATSAPP_NUMBER } from "./site-contact";
 
 export const fallbackCategories: CategorySummary[] = [
   {
@@ -395,7 +396,8 @@ export const fallbackEquipment: EquipmentSummary[] = [
 export const fallbackSiteSettings: SiteSettings = {
   siteName: "PlantXchanger",
   contactEmail: "sales@plantxchanger.com",
-  whatsappNumber: "+8613800000000",
+  phoneNumber: DEFAULT_PHONE_NUMBER,
+  whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
   whatsappDisplayLabel: "WhatsApp",
   homepageHeadline: "The global exchange for used process equipment",
   homepageIntro:
