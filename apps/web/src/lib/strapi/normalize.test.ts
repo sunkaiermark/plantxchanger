@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { normalizeEquipment } from "./normalize";
+import { normalizeEquipment, normalizeSiteSettings } from "./normalize";
 
 test("normalizeEquipment supports Strapi 5 flat responses", () => {
   const result = normalizeEquipment(
@@ -59,4 +59,18 @@ test("normalizeEquipment supports Strapi attributes responses", () => {
   assert.equal(result.reference, "PX-M-001");
   assert.equal(result.condition, "excellent");
   assert.equal(result.gallery[0].url, "https://cdn.example.com/mixer.jpg");
+});
+
+test("normalizeSiteSettings canonicalizes persisted legacy branding", () => {
+  const result = normalizeSiteSettings({
+    siteName: "Plant Xchange",
+    defaultSeoTitle: "PlantXchange marketplace",
+    defaultSeoDescription: "Source equipment through Plantxchange.",
+    footerSummary: "About PlantXchange",
+  });
+
+  assert.equal(result.siteName, "PlantXchanger");
+  assert.equal(result.defaultSeoTitle, "PlantXchanger marketplace");
+  assert.equal(result.defaultSeoDescription, "Source equipment through PlantXchanger.");
+  assert.equal(result.footerSummary, "About PlantXchanger");
 });

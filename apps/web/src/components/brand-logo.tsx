@@ -1,3 +1,5 @@
+import { canonicalizeBrandText, SITE_BRAND_NAME } from "@/lib/brand";
+
 type BrandLogoProps = {
   siteName?: string;
   variant?: "default" | "inverse";
@@ -5,8 +7,10 @@ type BrandLogoProps = {
 };
 
 function renderWordmark(siteName: string, inverse: boolean) {
-  if (siteName.toLowerCase() !== "plantxchange") {
-    return <span className="text-xl font-black tracking-normal">{siteName}</span>;
+  const canonicalSiteName = canonicalizeBrandText(siteName);
+
+  if (canonicalSiteName !== SITE_BRAND_NAME) {
+    return <span className="text-xl font-black tracking-normal">{canonicalSiteName}</span>;
   }
 
   return (
@@ -17,13 +21,13 @@ function renderWordmark(siteName: string, inverse: boolean) {
     >
       <span>Plant</span>
       <span className={inverse ? "text-[#ff8a4c]" : "text-[#ff3d00]"}>X</span>
-      <span>change</span>
+      <span>changer</span>
     </span>
   );
 }
 
 export function BrandLogo({
-  siteName = "PlantXchange",
+  siteName = SITE_BRAND_NAME,
   variant = "default",
   showTagline = true,
 }: BrandLogoProps) {

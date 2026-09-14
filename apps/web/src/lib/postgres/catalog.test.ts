@@ -84,7 +84,7 @@ const adminCategoryInput: AdminCategoryInput = {
 };
 
 const adminSettingsInput: AdminSettingsInput = {
-  siteName: "PlantXchange",
+  siteName: "PlantXchanger",
   contactEmail: "sales@example.com",
   whatsappNumber: "+15550100",
   whatsappDisplayLabel: "Message us",
@@ -137,7 +137,7 @@ const categoryRow = {
 };
 
 const settingsRow = {
-  site_name: "PlantXchange",
+  site_name: "PlantXchanger",
   contact_email: "sales@example.com",
   whatsapp_number: "+15550100",
   whatsapp_display_label: "Message us",
@@ -293,7 +293,7 @@ test("getSiteSettingsFromPostgres maps stored global settings with fallback defa
 
   const settings = await getSiteSettingsFromPostgres(fake.sql);
 
-  assert.equal(settings.siteName, "PlantXchange DB");
+  assert.equal(settings.siteName, "PlantXchanger DB");
   assert.equal(settings.homepageHeadline, "Used process equipment");
   assert.equal(settings.homepageIntro, "Find serious sellers.");
 });
@@ -461,7 +461,7 @@ test("updateAdminSettings upserts global settings", async () => {
 
   const settings = await updateAdminSettings(fake.sql, adminSettingsInput);
 
-  assert.equal(settings.siteName, "PlantXchange");
+  assert.equal(settings.siteName, "PlantXchanger");
   assert.match(fake.calls.at(-1)?.text ?? "", /INSERT INTO site_settings/);
   assert.match(fake.calls.at(-1)?.text ?? "", /ON CONFLICT \(id\) DO UPDATE/);
 });

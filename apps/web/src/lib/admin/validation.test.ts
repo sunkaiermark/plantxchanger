@@ -49,7 +49,7 @@ test("adminEquipmentSchema accepts a complete published process equipment record
       "https://example.com/methanol-plant-1.jpg",
       "https://example.com/methanol-plant-2.jpg",
     ],
-    sellerDisplayName: "PlantXchange Verified Seller",
+    sellerDisplayName: "PlantXchanger Verified Seller",
     isFeatured: true,
     isPublished: "true",
     seoTitle: "ICI Low-Pressure Methanol Plant for Sale",
@@ -311,13 +311,13 @@ test("adminInquiryUpdateSchema accepts qualified and rejects pending", () => {
 
 test("adminSettingsSchema accepts homepage headline and intro settings", () => {
   const result = adminSettingsSchema.safeParse({
-    siteName: "PlantXchange",
+    siteName: "PlantXchanger",
     contactEmail: "sales@plantxchange.com",
     whatsappNumber: "+86 138 0000 0000",
     whatsappDisplayLabel: "WhatsApp",
     homepageHeadline: "Buy and sell complete process plants",
     homepageIntro: "I".repeat(500),
-    defaultSeoTitle: "PlantXchange Process Equipment Marketplace",
+    defaultSeoTitle: "PlantXchanger Process Equipment Marketplace",
     defaultSeoDescription: "Industrial process equipment and complete plant assets for sale.",
     footerSummary: "F".repeat(600),
   });

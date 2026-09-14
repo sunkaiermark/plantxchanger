@@ -12,7 +12,7 @@
   "attributes": {
     "siteName": {
       "type": "string",
-      "default": "PlantXchange",
+      "default": "PlantXchanger",
       "required": true
     },
     "contactEmail": {

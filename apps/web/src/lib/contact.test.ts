@@ -12,6 +12,7 @@ test("buildEquipmentEmailHref includes equipment reference and title", () => {
   const href = buildEquipmentEmailHref(equipment, "sales@plantxchange.com");
   const decoded = decodeURIComponent(href);
   assert.ok(href.startsWith("mailto:sales@plantxchange.com?"));
+  assert.match(decoded, /Hello PlantXchanger,/);
   assert.match(decoded, /PX-R-001/);
   assert.match(decoded, /10,000 L Stainless Steel Jacketed Reactor/);
 });

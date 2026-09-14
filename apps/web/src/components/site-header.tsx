@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Box, Factory, FileText, PlusCircle, Search } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
+import { canonicalizeBrandText } from "@/lib/brand";
 import type { SiteSettings } from "@/lib/strapi/types";
 
 const navItems = [
@@ -11,11 +12,13 @@ const navItems = [
 ];
 
 export function SiteHeader({ settings }: { settings: SiteSettings }) {
+  const siteName = canonicalizeBrandText(settings.siteName);
+
   return (
     <header className="sticky top-0 z-40 border-b border-[#e3e3e3] bg-white shadow-sm">
       <div className="mx-auto flex h-[82px] max-w-7xl items-center justify-between gap-5 px-5 sm:px-8 lg:px-10">
-        <Link href="/" className="min-w-0" aria-label={`${settings.siteName} home`}>
-          <BrandLogo siteName={settings.siteName} />
+        <Link href="/" className="min-w-0" aria-label={`${siteName} home`}>
+          <BrandLogo siteName={siteName} />
         </Link>
         <nav className="hidden items-center gap-7 text-[15px] font-bold text-[#1f2328] md:flex">
           {navItems.map((item) => (

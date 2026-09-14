@@ -6,7 +6,7 @@ interface EquipmentContactContext {
 
 export function buildEquipmentMessage(equipment: EquipmentContactContext): string {
   return [
-    "Hello PlantXchange,",
+    "Hello PlantXchanger,",
     "",
     "I am interested in this equipment:",
     `Reference: ${equipment.reference}`,
